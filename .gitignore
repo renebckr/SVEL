@@ -1,0 +1,8 @@
+#Artifacts
+.cache
+.vscode
+cmake
+build
+deps
+data/shader/*
+doc/html
