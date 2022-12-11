@@ -1,6 +1,9 @@
 #ifndef __IMPL_WINDOW_H__
 #define __IMPL_WINDOW_H__
 
+#include "core/surface.h"
+#include "core/window.h"
+#include "renderer/renderer.h"
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.hpp>
@@ -14,34 +17,16 @@ namespace SVEL_NAMESPACE {
 class IWindow::Impl {
 private:
   sv::SharedIApplication _parentApp;
-
-  /**
-   * @brief The GLFWwindow ptr.
-   */
-  GLFWwindow *_win;
-
-  /**
-   * @brief The Vulkan Surface for this window.
-   *
-   */
-  vk::SurfaceKHR _surface;
-
-  /**
-   * @brief Title of the window.
-   */
-  std::string _title;
-
-  /**
-   * @brief Extent of the window.
-   */
-  sv::Extent _winSize;
+  SharedVulkanRenderer _renderer;
+  core::SharedWindow _window;
+  core::SharedSurface _surface;
 
 public:
   Impl(sv::SharedIApplication parent, const std::string &title,
        const Extent &size);
-  ~Impl();
+  ~Impl() = default;
 
-  vk::SurfaceKHR GetSurface();
+  SharedVulkanRenderer GetRenderer();
 };
 
 } // namespace SVEL_NAMESPACE

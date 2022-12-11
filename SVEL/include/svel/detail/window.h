@@ -3,6 +3,7 @@
 
 #include <svel/config.h>
 #include <svel/detail/app.h>
+#include <svel/detail/renderer.h>
 #include <svel/util/structs.hpp>
 
 #include <memory>
@@ -15,6 +16,8 @@ class IWindow {
 public:
   IWindow(SharedIApplication parent, const std::string &title,
           const Extent &windowSize);
+
+  SharedRenderer GetRenderer();
 };
 
 } // namespace SVEL_NAMESPACE
