@@ -17,7 +17,9 @@ public:
   IWindow(SharedIApplication parent, const std::string &title,
           const Extent &windowSize);
 
-  SharedRenderer GetRenderer();
+  SharedRenderer GetRenderer() const;
+
+  Extent GetWindowSize() const;
 };
 
 } // namespace SVEL_NAMESPACE

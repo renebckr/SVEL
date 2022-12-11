@@ -26,7 +26,9 @@ public:
        const Extent &size);
   ~Impl() = default;
 
-  SharedVulkanRenderer GetRenderer();
+  SharedVulkanRenderer GetRenderer() const;
+
+  Extent GetWindowSize() const;
 };
 
 } // namespace SVEL_NAMESPACE

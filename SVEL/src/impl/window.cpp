@@ -20,7 +20,13 @@ IWindow::Impl::Impl(sv::SharedIApplication parent, const std::string &title,
   _renderer = std::make_shared<VulkanRenderer>(_parentApp, _surface);
 }
 
-SharedVulkanRenderer IWindow::Impl::GetRenderer() { return _renderer; }
+SharedVulkanRenderer IWindow::Impl::GetRenderer() const { return _renderer; }
+
+Extent IWindow::Impl::GetWindowSize() const {
+  int width, height;
+  glfwGetWindowSize(_window->Get(), &width, &height);
+  return {(unsigned int)width, (unsigned int)height};
+}
 
 // --- INTERFACE ---
 
@@ -29,4 +35,6 @@ IWindow::IWindow(SharedIApplication parent, const std::string &title,
   __pImpl = std::make_shared<IWindow::Impl>(parent, title, windowSize);
 }
 
-SharedRenderer IWindow::GetRenderer() { return __pImpl->GetRenderer(); }
+SharedRenderer IWindow::GetRenderer() const { return __pImpl->GetRenderer(); }
+
+Extent IWindow::GetWindowSize() const { return __pImpl->GetWindowSize(); }
