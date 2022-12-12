@@ -11,7 +11,7 @@
 #ifndef ENGINE_CORE_DEVICE_H
 #define ENGINE_CORE_DEVICE_H
 
-#include "core/surface.h"
+#include <core/surface.h>
 #include <svel/detail/app.h>
 
 #include <util/vulkan_object.hpp>
