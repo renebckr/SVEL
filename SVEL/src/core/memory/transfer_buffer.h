@@ -10,7 +10,7 @@
 #ifndef __CORE_MEMORY_TRANSFER_BUFFER_HPP__
 #define __CORE_MEMORY_TRANSFER_BUFFER_HPP__
 
-#include "core/barrier.h"
+#include <core/barrier.h>
 #include <core/memory/buffer.h>
 #include <util/array_proxy.hpp>
 

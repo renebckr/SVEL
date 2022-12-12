@@ -8,8 +8,8 @@
  *
  */
 
-#include "barrier.h"
-#include "device.h"
+#include <core/barrier.h>
+#include <core/device.h>
 
 #include <limits>
 #include <stdexcept>

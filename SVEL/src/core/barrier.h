@@ -10,8 +10,8 @@
 #ifndef __CORE_BARIER_H__
 #define __CORE_BARIER_H__
 
-#include "core/device.h"
-#include "util/vulkan_object.hpp"
+#include <core/device.h>
+#include <util/vulkan_object.hpp>
 
 #include <functional>
 #include <memory>

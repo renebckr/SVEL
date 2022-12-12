@@ -1,6 +1,6 @@
-#include "transfer_buffer.h"
-#include "buffer.h"
-#include "core/barrier.h"
+#include <core/barrier.h>
+#include <core/memory/buffer.h>
+#include <core/memory/transfer_buffer.h>
 
 #include <memory>
 
