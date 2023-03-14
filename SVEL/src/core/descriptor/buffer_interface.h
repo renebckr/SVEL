@@ -1,6 +1,8 @@
 #ifndef __CORE_DESCRIPTOR_BUFFER_INTERFACE_H__
 #define __CORE_DESCRIPTOR_BUFFER_INTERFACE_H__
 
+#include "svel/config.h"
+#include <memory>
 #include <vulkan/vulkan.hpp>
 
 namespace core::descriptor {
@@ -25,6 +27,7 @@ public:
 
   const vk::DescriptorBufferInfo &GetBufferInfo() const;
 };
+SVEL_CLASS(BufferInterface)
 
 } // namespace core::descriptor
 

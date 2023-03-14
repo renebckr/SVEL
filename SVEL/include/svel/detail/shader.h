@@ -4,11 +4,47 @@
 #include <svel/config.h>
 
 #include <memory>
+#include <unordered_map>
 
 namespace SVEL_NAMESPACE {
 
+enum class BindingType {
+  eUniformBuffer,
+  eUniformBufferDynamic,
+  eCombinedImageSampler
+};
+
+class SetLayout {
+public:
+  struct Binding {
+    BindingType type;
+    uint32_t dataElementSize;
+
+    template <typename T>
+    Binding(const BindingType &bindingType)
+        : type(bindingType), dataElementSize(sizeof(T)) {}
+
+    Binding(const BindingType &bindingType, uint32_t elementSize = 0);
+  };
+
+private:
+  std::unordered_map<unsigned int, Binding> _bindings;
+
+public:
+  SetLayout &Add(unsigned int id, const Binding &binding);
+  const std::unordered_map<unsigned int, Binding> &GetBindings() const;
+};
+
 class IShader {
+public:
+  enum class Type { eFragment, eVertex };
+
   SVEL_PIMPL
+
+public:
+  IShader(SharedImpl impl);
+
+  IShader &AddSetLayout(unsigned int id, const SetLayout &setLayout);
 };
 
 } // namespace SVEL_NAMESPACE

@@ -2,9 +2,9 @@
 
 using namespace core::descriptor;
 
-DynamicDescriptorBuffer::DynamicDescriptorBuffer(
-    std::shared_ptr<core::Device> device, unsigned int alignment,
-    size_t elementSize, vk::DescriptorType type)
+DynamicBuffer::DynamicBuffer(std::shared_ptr<core::Device> device,
+                             unsigned int alignment, size_t elementSize,
+                             vk::DescriptorType type)
     : _device(device), _alignment(alignment), _elementSize(elementSize),
       _descriptorType(type) {
   _usage = _getUsage(type);
@@ -16,13 +16,13 @@ DynamicDescriptorBuffer::DynamicDescriptorBuffer(
   _allocateBuffer();
 }
 
-DynamicDescriptorBuffer::~DynamicDescriptorBuffer() {
+DynamicBuffer::~DynamicBuffer() {
   for (const auto &buffer : _buffers) {
     _device->AsVulkanObj().unmapMemory(buffer.second->GetMemory());
   }
 }
 
-void DynamicDescriptorBuffer::_allocateBuffer() {
+void DynamicBuffer::_allocateBuffer() {
   auto buffer = std::make_unique<core::Buffer>(
       _device, _bufferSize, _usage,
       vk::MemoryPropertyFlagBits::eHostVisible |
@@ -35,16 +35,14 @@ void DynamicDescriptorBuffer::_allocateBuffer() {
   _updateBufferInfo((uint32_t)_buffers.size() - 1);
 }
 
-void DynamicDescriptorBuffer::_updateBufferInfo(uint32_t bufferIndex) {
+void DynamicBuffer::_updateBufferInfo(uint32_t bufferIndex) {
   _bufferInfo = vk::DescriptorBufferInfo(
       _buffers.at(bufferIndex).second->AsVulkanObj(), 0, _alignedElementSize);
 }
 
-vk::DescriptorType DynamicDescriptorBuffer::GetType() const {
-  return _descriptorType;
-}
+vk::DescriptorType DynamicBuffer::GetType() const { return _descriptorType; }
 
-DynamicDescriptorBuffer::WriteInfo DynamicDescriptorBuffer::Write(void *data) {
+DynamicBuffer::WriteInfo DynamicBuffer::Write(void *data) {
   bool requiredAllocation = false;
   uint32_t newBufferIndex =
       (uint32_t)(_head / SVEL_DESCRIPTOR_DYNAMIC_BUFFER_SIZE);
@@ -72,12 +70,8 @@ DynamicDescriptorBuffer::WriteInfo DynamicDescriptorBuffer::Write(void *data) {
   return WriteInfo::eSuccess;
 }
 
-uint32_t DynamicDescriptorBuffer::GetBufferIndex() {
-  return _currentBufferIndex;
-}
+uint32_t DynamicBuffer::GetBufferIndex() { return _currentBufferIndex; }
 
-uint32_t DynamicDescriptorBuffer::GetBufferOffset() { return _bufferOffset; }
+uint32_t DynamicBuffer::GetBufferOffset() { return _bufferOffset; }
 
-void DynamicDescriptorBuffer::Reset() {
-  _head = _currentBufferIndex = _bufferOffset = 0;
-}
+void DynamicBuffer::Reset() { _head = _currentBufferIndex = _bufferOffset = 0; }

@@ -2,6 +2,7 @@
 #define __CORE_DESCRIPTOR_ALLOCATOR_H__
 
 #include "core/device.h"
+#include "svel/config.h"
 
 #include <stack>
 #include <vulkan/vulkan.hpp>
@@ -47,6 +48,7 @@ public:
   vk::DescriptorSet AllocateSet(vk::DescriptorSetLayout &layout);
   void ResetPools();
 };
+SVEL_CLASS(Allocator)
 
 } // namespace core::descriptor
 

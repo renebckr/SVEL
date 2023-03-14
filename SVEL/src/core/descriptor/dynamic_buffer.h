@@ -15,7 +15,7 @@ namespace core::descriptor {
 
 // Do NOT use this in a multi threaded environment. Allocate Buffers for every
 // thread!
-class DynamicDescriptorBuffer : public BufferInterface {
+class DynamicBuffer : public BufferInterface {
 private:
   core::SharedDevice _device;
   std::vector<std::pair<void *, core::UniqueBuffer>> _buffers;
@@ -30,10 +30,9 @@ private:
   void _updateBufferInfo(uint32_t _bufferIndex);
 
 public:
-  DynamicDescriptorBuffer(std::shared_ptr<core::Device> device,
-                          unsigned int alignment, size_t elementSize,
-                          vk::DescriptorType type);
-  ~DynamicDescriptorBuffer();
+  DynamicBuffer(std::shared_ptr<core::Device> device, unsigned int alignment,
+                size_t elementSize, vk::DescriptorType type);
+  ~DynamicBuffer();
 
   vk::DescriptorType GetType() const override;
   WriteInfo Write(void *data) override;

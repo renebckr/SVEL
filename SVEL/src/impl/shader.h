@@ -1,68 +1,23 @@
 #ifndef __IMPL_SHADER_H__
 #define __IMPL_SHADER_H__
 
-#include "core/device.h"
-#include "util/vulkan_object.hpp"
-
+#include "core/descriptor/group.h"
+#include "core/shader.h"
 #include <svel/detail/shader.h>
-#include <vulkan/vulkan.hpp>
+
+#include <unordered_set>
 
 namespace SVEL_NAMESPACE {
 
-class IShader::Impl : public util::VulkanAdapter<vk::ShaderModule> {
-public:
-  /**
-   * @brief Type of Shader
-   */
-  enum class Type { VERTEX, FRAGMENT };
-
+class IShader::Impl {
 private:
-  /**
-   * @brief Device to use.
-   */
-  core::SharedDevice _device;
-
-  /**
-   * @brief Flags for this shader stage.
-   */
-  vk::ShaderStageFlags _stage;
-
-  /**
-   * @brief Load a shader from a file.
-   *
-   * @param _path Path to a valid shader file compiled by SPIRV
-   * @return std::vector<char> Data in the shaderfile
-   */
-  std::vector<char> _loadShaderFile(const std::string &path);
-
-  /**
-   * @brief Sets stage flags for the given shader module type.
-   *
-   * @param _type Type of the shader module
-   */
-  void _setStageFlags(Type _type);
+  core::SharedShader _shader;
+  std::unordered_set<unsigned int> _setIds;
 
 public:
-  /**
-   * @brief Construct a new Shader Module.
-   *
-   * @param device Device to use
-   * @param path Path to the shader file
-   * @param type Type of the shader module
-   */
-  Impl(core::SharedDevice device, const std::string &path, Type type);
+  Impl(core::SharedDevice device, const std::string &filepath, Type shaderType);
 
-  /**
-   * @brief Destroy the Shader Module.
-   */
-  ~Impl();
-
-  /**
-   * @brief Getter for the stage flags of the shader.
-   *
-   * @return vk::ShaderStageFlags Shader Stage Flags
-   */
-  vk::ShaderStageFlags GetStage() const;
+  void AddSetLayout(unsigned int id, const SetLayout &setLayout);
 };
 
 } // namespace SVEL_NAMESPACE
