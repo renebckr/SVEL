@@ -13,9 +13,9 @@
 #include <fstream>
 #include <stdexcept>
 
-using namespace SVEL_NAMESPACE;
+using namespace core;
 
-std::vector<char> IShader::Impl::_loadShaderFile(const std::string &path) {
+std::vector<char> Shader::_loadShaderFile(const std::string &path) {
   std::ifstream in(path, std::ios::binary | std::ios::ate);
 
   // Check stream
@@ -38,12 +38,12 @@ std::vector<char> IShader::Impl::_loadShaderFile(const std::string &path) {
   return data;
 }
 
-void IShader::Impl::_setStageFlags(Type type) {
+void Shader::_setStageFlags(Type type) {
   switch (type) {
-  case IShader::Impl::Type::VERTEX:
+  case Shader::Type::VERTEX:
     _stage = vk::ShaderStageFlagBits::eVertex;
     break;
-  case IShader::Impl::Type::FRAGMENT:
+  case Shader::Type::FRAGMENT:
     _stage = vk::ShaderStageFlagBits::eFragment;
     break;
   default:
@@ -51,8 +51,7 @@ void IShader::Impl::_setStageFlags(Type type) {
   }
 }
 
-IShader::Impl::Impl(core::SharedDevice device, const std::string &path,
-                    Type type)
+Shader::Shader(core::SharedDevice device, const std::string &path, Type type)
     : _device(device) {
   // Create Module
   auto data = _loadShaderFile(path);
@@ -67,8 +66,14 @@ IShader::Impl::Impl(core::SharedDevice device, const std::string &path,
   _vulkanObj = device->AsVulkanObj().createShaderModule(shaderModuleInfo);
 }
 
-IShader::Impl::~Impl() {
-  _device->AsVulkanObj().destroyShaderModule(_vulkanObj);
+Shader::~Shader() { _device->AsVulkanObj().destroyShaderModule(_vulkanObj); }
+
+vk::ShaderStageFlags Shader::GetStage() const { return _stage; }
+
+void Shader::AddBinding(const Binding &setLayout) {
+  _bindings.emplace_back(setLayout);
 }
 
-vk::ShaderStageFlags IShader::Impl::GetStage() const { return _stage; }
+const std::vector<Shader::Binding> &Shader::GetLayout() const {
+  return _bindings;
+}

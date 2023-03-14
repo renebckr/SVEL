@@ -1,5 +1,5 @@
-#ifndef __IMPL_SHADER_H__
-#define __IMPL_SHADER_H__
+#ifndef __CORE_SHADER_H__
+#define __CORE_SHADER_H__
 
 #include "core/device.h"
 #include "util/vulkan_object.hpp"
@@ -7,14 +7,24 @@
 #include <svel/detail/shader.h>
 #include <vulkan/vulkan.hpp>
 
-namespace SVEL_NAMESPACE {
+namespace core {
 
-class IShader::Impl : public util::VulkanAdapter<vk::ShaderModule> {
+class Shader : public util::VulkanAdapter<vk::ShaderModule> {
 public:
   /**
    * @brief Type of Shader
    */
-  enum class Type { VERTEX, FRAGMENT };
+  enum class Type {
+    VERTEX = static_cast<int>(SVEL_NAMESPACE::Shader::Type::eVertex),
+    FRAGMENT = static_cast<int>(SVEL_NAMESPACE::Shader::Type::eFragment)
+  };
+
+  struct Binding {
+    uint32_t setId;
+    uint32_t bindingId;
+    vk::DescriptorType type;
+    size_t elementSize;
+  };
 
 private:
   /**
@@ -26,6 +36,8 @@ private:
    * @brief Flags for this shader stage.
    */
   vk::ShaderStageFlags _stage;
+
+  std::vector<Binding> _bindings;
 
   /**
    * @brief Load a shader from a file.
@@ -50,12 +62,12 @@ public:
    * @param path Path to the shader file
    * @param type Type of the shader module
    */
-  Impl(core::SharedDevice device, const std::string &path, Type type);
+  Shader(core::SharedDevice device, const std::string &path, Type type);
 
   /**
    * @brief Destroy the Shader Module.
    */
-  ~Impl();
+  ~Shader();
 
   /**
    * @brief Getter for the stage flags of the shader.
@@ -63,8 +75,13 @@ public:
    * @return vk::ShaderStageFlags Shader Stage Flags
    */
   vk::ShaderStageFlags GetStage() const;
+
+  void AddBinding(const Binding &setLayout);
+
+  const std::vector<Binding> &GetLayout() const;
 };
+SVEL_CLASS(Shader);
 
-} // namespace SVEL_NAMESPACE
+} // namespace core
 
-#endif /* __IMPL_SHADER_H__ */
+#endif /* __CORE_SHADER_H__ */
