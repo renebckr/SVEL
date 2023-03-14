@@ -35,17 +35,13 @@ public:
   const std::unordered_map<unsigned int, Binding> &GetBindings() const;
 };
 
-class IShader {
+class Shader {
 public:
   enum class Type { eFragment, eVertex };
 
-  SVEL_PIMPL
-
-public:
-  IShader(SharedImpl impl);
-
-  IShader &AddSetLayout(unsigned int id, const SetLayout &setLayout);
+  virtual Shader &AddSetLayout(unsigned int id, const SetLayout &setLayout) = 0;
 };
+SVEL_CLASS(Shader);
 
 } // namespace SVEL_NAMESPACE
 

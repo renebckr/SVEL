@@ -16,15 +16,14 @@ SetLayout::GetBindings() const {
   return _bindings;
 }
 
-// --- IMPL ---
-
-IShader::Impl::Impl(core::SharedDevice device, const std::string &filepath,
-                    Type shaderType) {
+VulkanShader::VulkanShader(core::SharedDevice device,
+                           const std::string &filepath, Type shaderType) {
   _shader = std::make_shared<core::Shader>(
       device, filepath, static_cast<core::Shader::Type>(shaderType));
 }
 
-void IShader::Impl::AddSetLayout(unsigned int id, const SetLayout &setLayout) {
+Shader &VulkanShader::AddSetLayout(unsigned int id,
+                                   const SetLayout &setLayout) {
   if (_setIds.find(id) == _setIds.end())
     throw std::invalid_argument("Can only add one set layout per id.");
   _setIds.insert(id);
@@ -50,13 +49,5 @@ void IShader::Impl::AddSetLayout(unsigned int id, const SetLayout &setLayout) {
 
     _shader->AddBinding(shaderBinding);
   }
-}
-
-// --- Interface ---
-
-IShader::IShader(SharedImpl impl) : __pImpl(impl) {}
-
-IShader &IShader::AddSetLayout(unsigned int id, const SetLayout &setLayout) {
-  __pImpl->AddSetLayout(id, setLayout);
   return *this;
 }

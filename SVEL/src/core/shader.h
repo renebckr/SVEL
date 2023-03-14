@@ -15,8 +15,8 @@ public:
    * @brief Type of Shader
    */
   enum class Type {
-    VERTEX = static_cast<int>(SVEL_NAMESPACE::IShader::Type::eVertex),
-    FRAGMENT = static_cast<int>(SVEL_NAMESPACE::IShader::Type::eFragment)
+    VERTEX = static_cast<int>(SVEL_NAMESPACE::Shader::Type::eVertex),
+    FRAGMENT = static_cast<int>(SVEL_NAMESPACE::Shader::Type::eFragment)
   };
 
   struct Binding {
