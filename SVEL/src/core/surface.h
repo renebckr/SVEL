@@ -11,7 +11,7 @@
 #ifndef __CORE_SURFACE_H_
 #define __CORE_SURFACE_H_
 
-#include "window.h"
+#include <core/window.h>
 #include <svel/detail/app.h>
 
 #include <util/vulkan_object.hpp>

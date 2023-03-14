@@ -1,8 +1,8 @@
 #ifndef __CORE_SWAPCHAIN_H__
 #define __CORE_SWAPCHAIN_H__
 
-#include "core/surface.h"
-#include "device.h"
+#include <core/device.h>
+#include <core/surface.h>
 
 #include <util/vulkan_object.hpp>
 
