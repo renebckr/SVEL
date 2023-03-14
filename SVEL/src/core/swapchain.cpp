@@ -34,7 +34,7 @@ vk::SurfaceFormatKHR core::Swapchain::_findSurfaceFormat() {
   auto prioritizedList = util::PriorityOrder(formatList, priorities);
   if (prioritizedList.size() == 0)
     throw std::runtime_error("No suitable Surface Format found.");
-  return formats.at(prioritizedList.front());
+  return formats.at((unsigned int)prioritizedList.front());
 }
 
 vk::PresentModeKHR core::Swapchain::_findPresentMode() {

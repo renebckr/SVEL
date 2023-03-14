@@ -9,6 +9,7 @@ add_library(${SVEL_LIB} STATIC ${SRC_FILES})
 add_library(${PROJECT_NAME}::${SVEL_LIB} ALIAS ${SVEL_LIB})
 
 target_link_libraries(${SVEL_LIB} PRIVATE ${GLFW_LIBRARIES} ${Vulkan_LIBRARIES})
+target_compile_options(${SVEL_LIB} PRIVATE -Wall -Wextra -Wshadow -Wconversion -Wpedantic -Werror)
 
 target_include_directories(
   ${SVEL_LIB} PUBLIC
