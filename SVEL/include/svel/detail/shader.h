@@ -20,11 +20,8 @@ public:
     BindingType type;
     uint32_t dataElementSize;
 
-    template <typename T>
-    Binding(const BindingType &bindingType)
-        : type(bindingType), dataElementSize(sizeof(T)) {}
-
-    Binding(const BindingType &bindingType, uint32_t elementSize = 0);
+    Binding(const BindingType &bindingType, uint32_t elementSize = 0)
+        : type(bindingType), dataElementSize(elementSize) {}
   };
 
 private:
@@ -38,6 +35,8 @@ public:
 class Shader {
 public:
   enum class Type { eFragment, eVertex };
+
+  virtual ~Shader() {}
 
   virtual Shader &AddSetLayout(unsigned int id, const SetLayout &setLayout) = 0;
 };

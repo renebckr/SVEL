@@ -24,7 +24,7 @@ VulkanShader::VulkanShader(core::SharedDevice device,
 
 Shader &VulkanShader::AddSetLayout(unsigned int id,
                                    const SetLayout &setLayout) {
-  if (_setIds.find(id) == _setIds.end())
+  if (_setIds.find(id) != _setIds.end())
     throw std::invalid_argument("Can only add one set layout per id.");
   _setIds.insert(id);
 
