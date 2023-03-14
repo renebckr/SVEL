@@ -21,8 +21,8 @@ core::Window::Window(const std::string &title, const sv::Extent &size)
   auto mode = glfwGetVideoMode(monitor);
 
   // Set size
-  _size.height = size.height == 0 ? mode->height : size.height;
-  _size.width = size.width == 0 ? mode->width : size.width;
+  _size.height = size.height == 0 ? (unsigned int)mode->height : size.height;
+  _size.width = size.width == 0 ? (unsigned int)mode->width : size.width;
 
   // Set Hints
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -33,8 +33,8 @@ core::Window::Window(const std::string &title, const sv::Extent &size)
   glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
   // Create Window
-  _win = glfwCreateWindow(_size.width, _size.height, _title.c_str(), monitor,
-                          nullptr);
+  _win = glfwCreateWindow((int)_size.width, (int)_size.height, _title.c_str(),
+                          monitor, nullptr);
   if (_win == nullptr)
     throw std::runtime_error("Could not create GLFW window.");
 }

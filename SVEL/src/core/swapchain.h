@@ -82,7 +82,9 @@ public:
    *
    * @return unsigned int How many images there are in the swapchain
    */
-  unsigned int GetSwapchainImageCount() { return _imageViews.size(); }
+  unsigned int GetSwapchainImageCount() {
+    return (unsigned int)_imageViews.size();
+  }
 
   /**
    * @brief Acquires the next swapchain image.
