@@ -1,9 +1,10 @@
 #ifndef __IMPL_WINDOW_H__
 #define __IMPL_WINDOW_H__
 
-#include "core/surface.h"
-#include "core/window.h"
-#include "renderer/renderer.h"
+#include <core/instance.h>
+#include <core/surface.h>
+#include <core/window.h>
+#include <renderer/renderer.h>
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.hpp>
@@ -16,13 +17,13 @@ namespace SVEL_NAMESPACE {
 
 class IWindow::Impl {
 private:
-  sv::SharedIApplication _parentApp;
+  core::SharedInstance _instance;
   SharedVulkanRenderer _renderer;
-  core::SharedWindow _window;
+  core::SharedVulkanWindow _window;
   core::SharedSurface _surface;
 
 public:
-  Impl(sv::SharedIApplication parent, const std::string &title,
+  Impl(core::SharedInstance instance, const std::string &title,
        const Extent &size);
   ~Impl() = default;
 

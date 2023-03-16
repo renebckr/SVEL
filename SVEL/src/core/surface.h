@@ -11,6 +11,7 @@
 #ifndef __CORE_SURFACE_H_
 #define __CORE_SURFACE_H_
 
+#include <core/instance.h>
 #include <core/window.h>
 #include <svel/detail/app.h>
 
@@ -29,12 +30,12 @@ private:
   /**
    * @brief Window to use.
    */
-  core::SharedWindow _window;
+  core::SharedVulkanWindow _window;
 
   /**
    * @brief Instance to use.
    */
-  sv::SharedIApplication _parentApp;
+  core::SharedInstance _instance;
 
 public:
   /**
@@ -43,7 +44,7 @@ public:
    * @param window Window that the surface should use
    * @param instance Instance that the surface should use
    */
-  Surface(sv::SharedIApplication parent, core::SharedWindow window);
+  Surface(core::SharedInstance instance, core::SharedVulkanWindow window);
 
   Surface(const Surface &) = delete;
   Surface &operator=(const Surface &) = delete;

@@ -23,7 +23,7 @@ namespace core {
 /**
  * @brief Wrapper for the GLFWwindow.
  */
-class Window {
+class VulkanWindow {
 private:
   /**
    * @brief The GLFWwindow.
@@ -41,19 +41,19 @@ private:
   sv::Extent _size;
 
 public:
-  Window(const std::string &title, const sv::Extent &size);
+  VulkanWindow(const std::string &title, const sv::Extent &size);
 
-  Window(const Window &) = delete;
-  Window &operator=(const Window &) = delete;
+  VulkanWindow(const VulkanWindow &) = delete;
+  VulkanWindow &operator=(const VulkanWindow &) = delete;
 
   /**
    * @brief Destroy the GLFW window.
    */
-  ~Window();
+  ~VulkanWindow();
 
   GLFWwindow *Get() { return _win; }
 };
-SVEL_CLASS(Window)
+SVEL_CLASS(VulkanWindow)
 
 } // namespace core
 

@@ -101,14 +101,13 @@ core::Device::findQueueFamilies(vk::PhysicalDevice device,
   return {};
 }
 
-core::Device::Device(sv::SharedIApplication parent, core::SharedSurface surface)
-    : _parentApp(parent), _surface(surface) {
+core::Device::Device(core::SharedInstance instance, core::SharedSurface surface)
+    : _instance(instance), _surface(surface) {
   // Append Extensions
   _extensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 
   // Get prioritized physical devices
-  auto physicalDevices =
-      _parentApp->__getImpl()->AsVulkanObj().enumeratePhysicalDevices();
+  auto physicalDevices = _instance->AsVulkanObj().enumeratePhysicalDevices();
   auto deviceIndices = prioritizePhysicalDevices(physicalDevices);
   if (deviceIndices.size() == 0)
     throw std::runtime_error("Could not get prioritized Physical Devices.");

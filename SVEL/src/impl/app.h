@@ -1,6 +1,7 @@
 #ifndef __IMPL_APP_H__
 #define __IMPL_APP_H__
 
+#include "core/instance.h"
 #include <svel/detail/app.h>
 
 #include <util/vulkan_object.hpp>
@@ -9,27 +10,9 @@
 
 namespace SVEL_NAMESPACE {
 
-class IApplication::Impl : public util::VulkanAdapter<vk::Instance> {
+class IApplication::Impl {
 private:
-  /**
-   * @brief Extensions and layers to use.
-   */
-  std::vector<const char *> extensions, layers;
-
-  /**
-   * @brief Application and engine name.
-   */
-  std::string appName, engineName;
-
-  /**
-   * @brief Application and engine version.
-   */
-  uint32_t appVersion, engineVersion;
-
-  /**
-   * @brief Create validation layers for debug purposes.
-   */
-  void setupInstanceValidationLayers();
+  core::SharedInstance _instance;
 
 public:
   /**
@@ -46,10 +29,7 @@ public:
   Impl(const IApplication::Impl &) = delete;
   Impl &operator=(const IApplication::Impl &) = delete;
 
-  /**
-   * @brief Destroy the Impl
-   */
-  ~Impl();
+  core::SharedInstance GetInstance();
 };
 
 } // namespace SVEL_NAMESPACE
