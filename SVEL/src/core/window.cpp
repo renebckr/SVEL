@@ -14,7 +14,8 @@
 #include <iostream>
 #include <stdexcept>
 
-core::Window::Window(const std::string &title, const sv::Extent &size)
+core::VulkanWindow::VulkanWindow(const std::string &title,
+                                 const sv::Extent &size)
     : _title(title) {
   // Fetch primary monitor and video mode
   auto monitor = glfwGetPrimaryMonitor();
@@ -39,4 +40,4 @@ core::Window::Window(const std::string &title, const sv::Extent &size)
     throw std::runtime_error("Could not create GLFW window.");
 }
 
-core::Window::~Window() { glfwDestroyWindow(_win); }
+core::VulkanWindow::~VulkanWindow() { glfwDestroyWindow(_win); }

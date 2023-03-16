@@ -26,7 +26,7 @@ namespace core {
  */
 class Device : public util::VulkanAdapter<vk::Device> {
 private:
-  sv::SharedIApplication _parentApp;
+  core::SharedInstance _instance;
   core::SharedSurface _surface;
 
   /**
@@ -84,7 +84,7 @@ private:
   findQueueFamilies(vk::PhysicalDevice device, uint32_t &constraintQueueCount);
 
 public:
-  Device(sv::SharedIApplication parent, core::SharedSurface surface);
+  Device(core::SharedInstance instance, core::SharedSurface surface);
 
   Device(const Device &) = delete;
   Device &operator=(const Device &) = delete;

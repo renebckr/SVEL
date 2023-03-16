@@ -18,12 +18,13 @@
 #include <iostream>
 #include <vulkan/vulkan.hpp>
 
-core::Surface::Surface(sv::SharedIApplication parent, core::SharedWindow window)
-    : _window(window), _parentApp(parent) {
+core::Surface::Surface(core::SharedInstance instance,
+                       core::SharedVulkanWindow window)
+    : _window(window), _instance(instance) {
   // Create surface by glfw
   VkSurfaceKHR s;
-  VkResult result = glfwCreateWindowSurface(
-      _parentApp->__getImpl()->AsVulkanObj(), _window->Get(), nullptr, &s);
+  VkResult result = glfwCreateWindowSurface(_instance->AsVulkanObj(),
+                                            _window->Get(), nullptr, &s);
 
   // Check success
   if (result != VK_SUCCESS)
@@ -37,6 +38,5 @@ core::Surface::Surface(sv::SharedIApplication parent, core::SharedWindow window)
 
 core::Surface::~Surface() {
   // Destroy the surface
-  vkDestroySurfaceKHR(_parentApp->__getImpl()->AsVulkanObj(), _vulkanObj,
-                      nullptr);
+  vkDestroySurfaceKHR(_instance->AsVulkanObj(), _vulkanObj, nullptr);
 }

@@ -36,7 +36,7 @@ class Shader {
 public:
   enum class Type { eFragment, eVertex };
 
-  virtual ~Shader() {}
+  virtual ~Shader(){};
 
   virtual Shader &AddSetLayout(unsigned int id, const SetLayout &setLayout) = 0;
 };

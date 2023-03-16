@@ -1,8 +1,9 @@
 #include "window.h"
 #include "app.h"
-#include "core/surface.h"
-#include "renderer/renderer.h"
-#include "svel/detail/renderer.h"
+#include <core/instance.h>
+#include <core/surface.h>
+#include <renderer/renderer.h>
+#include <svel/detail/renderer.h>
 
 #include <stdexcept>
 
@@ -10,14 +11,14 @@ using namespace SVEL_NAMESPACE;
 
 // --- IMPL ---
 
-IWindow::Impl::Impl(sv::SharedIApplication parent, const std::string &title,
+IWindow::Impl::Impl(core::SharedInstance instance, const std::string &title,
                     const Extent &size)
-    : _parentApp(parent) {
-  _window = std::make_shared<core::Window>(title, size);
-  _surface = std::make_shared<core::Surface>(_parentApp, _window);
+    : _instance(instance) {
+  _window = std::make_shared<core::VulkanWindow>(title, size);
+  _surface = std::make_shared<core::Surface>(_instance, _window);
 
   // Create Renderer
-  _renderer = std::make_shared<VulkanRenderer>(_parentApp, _surface);
+  _renderer = std::make_shared<VulkanRenderer>(_instance, _surface);
 }
 
 SharedVulkanRenderer IWindow::Impl::GetRenderer() const { return _renderer; }
@@ -32,7 +33,8 @@ Extent IWindow::Impl::GetWindowSize() const {
 
 IWindow::IWindow(SharedIApplication parent, const std::string &title,
                  const Extent &windowSize) {
-  __pImpl = std::make_shared<IWindow::Impl>(parent, title, windowSize);
+  __pImpl = std::make_shared<IWindow::Impl>(parent->__getImpl()->GetInstance(),
+                                            title, windowSize);
 }
 
 SharedRenderer IWindow::GetRenderer() const { return __pImpl->GetRenderer(); }

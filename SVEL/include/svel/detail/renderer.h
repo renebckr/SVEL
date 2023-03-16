@@ -2,6 +2,7 @@
 #define __SVEL_DETAIL_RENDERER_H__
 
 #include <svel/config.h>
+#include <svel/detail/pipeline.h>
 #include <svel/detail/shader.h>
 
 #include <memory>
@@ -14,6 +15,10 @@ public:
 
   virtual SharedShader LoadShader(const std::string &filepath,
                                   Shader::Type type) const = 0;
+
+  virtual SharedPipeline
+  BuildPipeline(SharedShader vert, SharedShader frag,
+                const VertexDescription &description) = 0;
 };
 SVEL_CLASS(Renderer)
 
