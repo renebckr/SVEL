@@ -16,7 +16,6 @@ private:
 public:
   SetQueue(std::vector<SharedSet> &_queueData);
   SetQueue(const SetQueue &) = delete;
-  ~SetQueue();
 
   SharedSet Next();
 };

@@ -5,7 +5,7 @@
 using namespace core::descriptor;
 
 void Allocator::_allocatePool() {
-  std::vector<vk::DescriptorPoolSize> sizes(_poolSizes.size());
+  std::vector<vk::DescriptorPoolSize> sizes;
   for (const auto &size : _poolSizes)
     sizes.push_back(vk::DescriptorPoolSize(
         size.first, (uint32_t)(size.second * SVEL_DESCRIPTOR_POOL_SIZE)));

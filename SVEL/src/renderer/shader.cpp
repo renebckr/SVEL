@@ -51,3 +51,5 @@ Shader &VulkanShader::AddSetLayout(unsigned int id,
   }
   return *this;
 }
+
+core::SharedShader VulkanShader::GetShader() const { return _shader; }

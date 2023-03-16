@@ -8,8 +8,8 @@
  *
  */
 
-#ifndef ENGINE_CORE_INSTANCE_H
-#define ENGINE_CORE_INSTANCE_H
+#ifndef __CORE_INSTANCE_H__
+#define __CORE_INSTANCE_H__
 
 #include <memory>
 #include <svel/config.h>
@@ -67,4 +67,4 @@ SVEL_CLASS(Instance)
 
 } // namespace core
 
-#endif /* ENGINE_CORE_INSTANCE_H */
+#endif /* __CORE_INSTANCE_H__ */

@@ -19,7 +19,9 @@ public:
 
   SVEL_NAMESPACE::Shader &
   AddSetLayout(unsigned int id,
-               const SVEL_NAMESPACE::SetLayout &setLayout) override;
+               const SVEL_NAMESPACE::SetLayout &setLayout) final override;
+
+  core::SharedShader GetShader() const;
 };
 SVEL_CLASS(VulkanShader)
 SVEL_DOWNCAST_IMPL(VulkanShader, SVEL_NAMESPACE::Shader)
