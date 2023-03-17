@@ -17,6 +17,8 @@ struct BindingDetails {
 
 class Set {
 private:
+  inline static std::shared_ptr<ImageDescriptor> _defaultTexture = nullptr;
+
   struct VectorHasher {
     uint32_t operator()(const std::vector<uint32_t> &V) const;
   };
@@ -26,11 +28,10 @@ private:
   UniqueAllocator _dynamicAllocator;
   vk::DescriptorSetLayout _layout;
   vk::DescriptorSet _baseDescriptorSet;
-  engine::TextureInterface *_defaultTexture;
   std::unordered_map<std::vector<uint32_t>, vk::DescriptorSet, VectorHasher>
       _descriptorSetCache;
   std::unordered_map<uint32_t, SharedBufferInterface> _buffers;
-  std::vector<engine::TextureInterface *> _boundTextures;
+  std::vector<ImageDescriptor *> _boundTextures;
   std::vector<SharedBufferInterface> _dynamicBuffers;
   std::unordered_map<uint32_t, uint32_t> _bindingToWriteSetMapping;
   std::vector<vk::WriteDescriptorSet> _writeSets;
@@ -41,16 +42,18 @@ private:
                                       bool &_out_dynamicBuffer);
 
 public:
+  static void
+  SetDefaultTexture(std::shared_ptr<ImageDescriptor> defaultTexture);
+
   Set(core::SharedDevice device, SharedAllocator staticAllocator,
-      vk::DescriptorSetLayout layout, engine::TextureInterface *defaultTexture,
-      std::vector<BindingDetails> &details);
+      vk::DescriptorSetLayout layout, std::vector<BindingDetails> &details);
   Set(const Set &) = delete;
 
   SharedBufferInterface GetBuffer(uint32_t binding);
   vk::DescriptorSet Get(std::vector<uint32_t> &out_offsets);
   void Reset();
   void NotifyBufferChange(uint32_t binding);
-  unsigned int BindTexture(engine::TextureInterface *texture, uint32_t binding);
+  unsigned int BindTexture(ImageDescriptor *texture, uint32_t binding);
   void BindTexture(unsigned int identifier, uint32_t binding);
 };
 SVEL_CLASS(Set);

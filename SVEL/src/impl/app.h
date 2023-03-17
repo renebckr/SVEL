@@ -2,6 +2,7 @@
 #define __IMPL_APP_H__
 
 #include "core/instance.h"
+#include "svel/detail/texture.h"
 #include <svel/detail/app.h>
 
 #include <util/vulkan_object.hpp>

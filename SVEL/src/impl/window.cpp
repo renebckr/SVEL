@@ -4,6 +4,7 @@
 #include <core/surface.h>
 #include <renderer/renderer.h>
 #include <svel/detail/renderer.h>
+#include <texture/texture.h>
 
 #include <stdexcept>
 
@@ -19,6 +20,15 @@ IWindow::Impl::Impl(core::SharedInstance instance, const std::string &title,
 
   // Create Renderer
   _renderer = std::make_shared<VulkanRenderer>(_instance, _surface);
+
+  // Set default texture
+  auto imgData = new unsigned char[4];
+  imgData[0] = imgData[2] = 255;
+  imgData[1] = 0;
+  imgData[3] = 255;
+  auto defaultImage = std::make_shared<Image>(Extent{1, 1}, 4, 4, imgData, 4);
+  _defaultTexture = _renderer->CreateTexture(defaultImage);
+  core::descriptor::Set::SetDefaultTexture(_defaultTexture);
 }
 
 SharedVulkanRenderer IWindow::Impl::GetRenderer() const { return _renderer; }

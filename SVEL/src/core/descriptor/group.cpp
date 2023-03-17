@@ -31,7 +31,7 @@ void SetGroup::_createQueue(
   std::vector<SharedSet> newSets;
   for (unsigned int i = 0; i < copyCount; i++)
     newSets.push_back(std::make_shared<Set>(device, _staticAllocator, layout,
-                                            _defaultTexture, bindingDetails));
+                                            bindingDetails));
 
   // Create Queue
   QueueDetails details;
@@ -47,9 +47,7 @@ void SetGroup::_grabSets() {
 
 SetGroup::SetGroup(std::shared_ptr<core::Device> device,
                    std::vector<core::SharedShader> &shaders,
-                   unsigned int maxFramesInFlight,
-                   engine::TextureInterface *defaultTexture)
-    : _defaultTexture(defaultTexture) {
+                   unsigned int maxFramesInFlight) {
   _staticAllocator = std::make_shared<Allocator>(device);
 
   SetDetails details;
@@ -125,8 +123,8 @@ WriteHandler SetGroup::GetBuffer(uint32_t setId, uint32_t binding) {
   return WriteHandler(_queueDetails.at(setId).currentSet, binding);
 }
 
-unsigned int SetGroup::BindTexture(engine::TextureInterface *texture,
-                                   uint32_t setId, uint32_t binding) {
+unsigned int SetGroup::BindTexture(ImageDescriptor *texture, uint32_t setId,
+                                   uint32_t binding) {
   return _queueDetails.at(setId).currentSet->BindTexture(texture, binding);
 }
 

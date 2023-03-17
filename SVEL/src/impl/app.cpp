@@ -1,5 +1,6 @@
 #include "app.h"
 #include "impl/window.h"
+#include "svel/detail/image.h"
 #include <algorithm>
 #include <memory>
 #include <stdexcept>

@@ -1,20 +1,17 @@
 #ifndef ENGINE_TEXTURE_INTERFACE_HPP
 #define ENGINE_TEXTURE_INTERFACE_HPP
 
-// TO BE MOVED
-
 #include <vulkan/vulkan.hpp>
 
-namespace engine {
-class TextureInterface {
+namespace core::descriptor {
+class ImageDescriptor {
 protected:
-  vk::DescriptorImageInfo imageInfo;
+  vk::DescriptorImageInfo _imageInfo;
 
 public:
-  virtual ~TextureInterface() {}
-
-  virtual vk::DescriptorImageInfo &GetImageInfo() { return imageInfo; }
+  virtual ~ImageDescriptor() {}
+  virtual vk::DescriptorImageInfo &GetImageInfo() { return _imageInfo; }
 };
-} // namespace engine
+} // namespace core::descriptor
 
 #endif /* ENGINE_TEXTURE_INTERFACE_HPP */

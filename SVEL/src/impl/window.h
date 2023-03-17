@@ -17,6 +17,7 @@ namespace SVEL_NAMESPACE {
 
 class IWindow::Impl {
 private:
+  SharedTexture _defaultTexture;
   core::SharedInstance _instance;
   SharedVulkanRenderer _renderer;
   core::SharedVulkanWindow _window;
