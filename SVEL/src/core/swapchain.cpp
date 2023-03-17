@@ -12,7 +12,6 @@
 #include "device.h"
 
 #include <cstdint>
-#include <iostream>
 #include <limits>
 #include <util/prioritized_order.hpp>
 

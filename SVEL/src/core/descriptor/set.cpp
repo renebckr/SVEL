@@ -29,12 +29,13 @@ SharedBufferInterface Set::_createBuffer(const BindingDetails &bindingDetails,
                                         bindingDetails.elementSize);
 }
 
+void Set::SetDefaultTexture(std::shared_ptr<ImageDescriptor> defaultTexture) {
+  _defaultTexture = defaultTexture;
+}
+
 Set::Set(core::SharedDevice device, SharedAllocator staticAllocator,
-         vk::DescriptorSetLayout layout,
-         engine::TextureInterface *defaultTexture,
-         std::vector<BindingDetails> &details)
-    : _device(device), _staticAllocator(staticAllocator), _layout(layout),
-      _defaultTexture(defaultTexture) {
+         vk::DescriptorSetLayout layout, std::vector<BindingDetails> &details)
+    : _device(device), _staticAllocator(staticAllocator), _layout(layout) {
   // Create Manager for on-the-fly descriptorSets
   _dynamicAllocator = std::make_unique<Allocator>(_device);
 
@@ -142,8 +143,7 @@ void Set::NotifyBufferChange(uint32_t binding) {
   _isBaseDescriptorSetOutdated = true;
 }
 
-unsigned int Set::BindTexture(engine::TextureInterface *texture,
-                              uint32_t binding) {
+unsigned int Set::BindTexture(ImageDescriptor *texture, uint32_t binding) {
   unsigned int textureID = (unsigned int)_boundTextures.size();
   _boundTextures.push_back(texture);
   BindTexture(textureID, binding);

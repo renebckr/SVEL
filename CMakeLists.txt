@@ -51,6 +51,7 @@ CPMAddPackage(
     GITHUB_REPOSITORY nothings/stb
     GIT_TAG af1a5bc352164740c1cc1354942b1c6b72eacb8a
 )
+include_directories(SYSTEM ${stb_SOURCE_DIR})
 
 CPMAddPackage(
     NAME RapidXML

@@ -5,6 +5,7 @@
 #include "core/descriptor/buffer_interface.h"
 #include "core/descriptor/queue.h"
 #include "core/descriptor/set.h"
+#include "core/descriptor/textureInterface.hpp"
 #include "core/shader.h"
 
 #include <vulkan/vulkan.hpp>
@@ -35,7 +36,6 @@ private:
   std::vector<vk::DescriptorSetLayout> _layouts;
   SharedAllocator _staticAllocator;
   std::vector<QueueDetails> _queueDetails;
-  engine::TextureInterface *_defaultTexture;
 
   void _createQueue(std::shared_ptr<core::Device> device, uint32_t copyCount,
                     std::vector<vk::DescriptorSetLayoutBinding> &layoutBindings,
@@ -45,8 +45,7 @@ private:
 public:
   SetGroup(std::shared_ptr<core::Device> device,
            std::vector<core::SharedShader> &shaders,
-           unsigned int maxFramesInFlight,
-           engine::TextureInterface *defaultTexture);
+           unsigned int maxFramesInFlight);
   SetGroup(const SetGroup &) = delete;
 
   void NotifyNewFrame();
@@ -54,7 +53,7 @@ public:
   const std::vector<vk::DescriptorSetLayout> &GetLayouts();
 
   WriteHandler GetBuffer(uint32_t setId, uint32_t binding);
-  unsigned int BindTexture(engine::TextureInterface *texture, uint32_t setId,
+  unsigned int BindTexture(ImageDescriptor *texture, uint32_t setId,
                            uint32_t binding);
   void RebindTexture(unsigned int textureId, uint32_t setId, uint32_t binding);
 };

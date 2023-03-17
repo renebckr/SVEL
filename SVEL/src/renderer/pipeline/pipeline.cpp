@@ -96,7 +96,7 @@ VulkanPipeline::VulkanPipeline(core::SharedDevice device,
   // Build descriptor Group
   std::vector<core::SharedShader> shaders = {frag, vert};
   _setGroup = std::make_shared<core::descriptor::SetGroup>(
-      device, shaders, swapchain->GetSwapchainImageCount(), nullptr);
+      device, shaders, swapchain->GetSwapchainImageCount());
 
   // Fetch devices
   auto physicalDevice = _device->GetPhysicalDevice();
