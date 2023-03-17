@@ -22,6 +22,9 @@ public:
   BuildPipeline(SharedShader vert, SharedShader frag,
                 const VertexDescription &description) = 0;
 
+  virtual void BindPipeline(SharedPipeline pipeline) = 0;
+  virtual void UnbindPipeline() = 0;
+
   virtual SharedTexture CreateTexture(SharedImage image) = 0;
 
   virtual SharedAnimation

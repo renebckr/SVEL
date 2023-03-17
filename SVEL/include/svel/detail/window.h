@@ -18,8 +18,10 @@ public:
           const Extent &windowSize);
 
   SharedRenderer GetRenderer() const;
-
   Extent GetWindowSize() const;
+  void StartRenderLoop();
+
+  virtual void Draw() = 0;
 };
 
 } // namespace SVEL_NAMESPACE

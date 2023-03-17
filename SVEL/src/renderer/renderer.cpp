@@ -23,6 +23,7 @@ VulkanRenderer::VulkanRenderer(core::SharedInstance instance,
 
 VulkanRenderer::~VulkanRenderer() {
   _device->AsVulkanObj().destroyCommandPool(_persistentCommandPool);
+  _device->AsVulkanObj().waitIdle();
 }
 
 SharedShader VulkanRenderer::LoadShader(const std::string &filepath,
@@ -30,14 +31,23 @@ SharedShader VulkanRenderer::LoadShader(const std::string &filepath,
   return std::make_shared<VulkanShader>(_device, filepath, type);
 }
 
+core::SharedDevice VulkanRenderer::GetDevice() { return _device; }
+
+core::SharedSwapchain VulkanRenderer::GetSwapchain() { return _swapchain; }
+
 SharedPipeline
 VulkanRenderer::BuildPipeline(SharedShader vert, SharedShader frag,
                               const VertexDescription &description) {
-
   return std::make_shared<renderer::VulkanPipeline>(
       _device, _surface, _swapchain, GetImpl(vert)->GetShader(),
       GetImpl(frag)->GetShader(), description);
 }
+
+void VulkanRenderer::BindPipeline(SharedPipeline pipeline) {
+  _currentFrame->BindPipeline(renderer::GetImpl(pipeline));
+}
+
+void VulkanRenderer::UnbindPipeline() { _currentFrame->UnbindPipeline(); }
 
 SharedTexture VulkanRenderer::CreateTexture(SharedImage image) {
   auto texture = std::make_shared<Texture>(_device, image);
@@ -53,4 +63,8 @@ VulkanRenderer::CreateAnimation(const std::vector<SharedImage> &images,
       _device, _persistentCommandPool, std::make_shared<core::Barrier>(_device),
       images, animationSpeed, looping);
   return animation;
+}
+
+void VulkanRenderer::SelectFrame(renderer::SharedFrame frame) {
+  _currentFrame = frame;
 }

@@ -181,6 +181,7 @@ public:
    */
   const vk::PipelineLayout &GetLayout() const { return _pipelineLayout; }
 };
+SVEL_CLASS(VulkanPipeline)
 SVEL_DOWNCAST_IMPL(VulkanPipeline, SVEL_NAMESPACE::Pipeline)
 
 } // namespace renderer

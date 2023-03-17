@@ -1,6 +1,7 @@
 #ifndef __IMPL_RENDERER_H__
 #define __IMPL_RENDERER_H__
 
+#include "renderer/frame.h"
 #include <core/surface.h>
 #include <renderer/pipeline/pipeline.h>
 #include <svel/detail/renderer.h>
@@ -14,6 +15,7 @@ private:
   core::SharedDevice _device;
   core::SharedSwapchain _swapchain;
   core::SharedSurface _surface;
+  renderer::SharedFrame _currentFrame;
 
   std::vector<renderer::VulkanPipeline> _pipelines;
   vk::CommandPool _persistentCommandPool;
@@ -34,12 +36,17 @@ public:
                 SVEL_NAMESPACE::SharedShader frag,
                 const SVEL_NAMESPACE::VertexDescription &description) override;
 
+  void BindPipeline(SVEL_NAMESPACE::SharedPipeline pipeline) override;
+  void UnbindPipeline() override;
+
   SVEL_NAMESPACE::SharedTexture
   CreateTexture(SVEL_NAMESPACE::SharedImage image) override;
 
   SVEL_NAMESPACE::SharedAnimation
   CreateAnimation(const std::vector<SVEL_NAMESPACE::SharedImage> &images,
                   float animationSpeed, bool looping) override;
+
+  void SelectFrame(renderer::SharedFrame frame);
 };
 SVEL_CLASS(VulkanRenderer)
 SVEL_DOWNCAST_IMPL(VulkanRenderer, SVEL_NAMESPACE::Renderer)

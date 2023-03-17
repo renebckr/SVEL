@@ -29,7 +29,7 @@ public:
   ~Impl() = default;
 
   SharedVulkanRenderer GetRenderer() const;
-
+  core::SharedVulkanWindow GetWindow() const;
   Extent GetWindowSize() const;
 };
 
