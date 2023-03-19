@@ -2,6 +2,7 @@
 #define __IMPL_RENDERER_H__
 
 #include "renderer/frame.h"
+#include "svel/util/array_proxy.hpp"
 #include <core/surface.h>
 #include <renderer/pipeline/pipeline.h>
 #include <svel/detail/renderer.h>
@@ -16,9 +17,11 @@ private:
   core::SharedSwapchain _swapchain;
   core::SharedSurface _surface;
   renderer::SharedFrame _currentFrame;
-
-  std::vector<renderer::VulkanPipeline> _pipelines;
+  vk::CommandBuffer *_currentRecordBuffer;
   vk::CommandPool _persistentCommandPool;
+
+  SVEL_NAMESPACE::SharedISceneMaterial _sceneMaterial;
+  renderer::SharedVulkanPipeline _boundPipeline;
 
 public:
   VulkanRenderer(core::SharedInstance instance, core::SharedSurface surface);
@@ -45,6 +48,21 @@ public:
   SVEL_NAMESPACE::SharedAnimation
   CreateAnimation(const std::vector<SVEL_NAMESPACE::SharedImage> &images,
                   float animationSpeed, bool looping) override;
+
+  SVEL_NAMESPACE::SharedMesh
+  CreateMesh(const SVEL_NAMESPACE::ArrayProxy &nodes,
+             const std::vector<uint16_t> &indices) override;
+
+  SVEL_NAMESPACE::SharedMesh
+  CreateMesh(const SVEL_NAMESPACE::ArrayProxy &nodes,
+             const std::vector<uint32_t> &indices) override;
+
+  void SetSceneMaterial(SVEL_NAMESPACE::SharedISceneMaterial material) override;
+
+  void Draw(SVEL_NAMESPACE::SharedMesh mesh) override;
+
+  void Draw(SVEL_NAMESPACE::SharedMesh mesh,
+            SVEL_NAMESPACE::SharedIMaterial material) override;
 
   void SelectFrame(renderer::SharedFrame frame);
 };

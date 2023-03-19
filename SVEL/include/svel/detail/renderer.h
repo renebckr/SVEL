@@ -2,7 +2,10 @@
 #define __SVEL_DETAIL_RENDERER_H__
 
 #include "svel/detail/image.h"
+#include "svel/detail/material.h"
+#include "svel/detail/mesh.h"
 #include "svel/detail/texture.h"
+#include "svel/util/array_proxy.hpp"
 #include <svel/config.h>
 #include <svel/detail/pipeline.h>
 #include <svel/detail/shader.h>
@@ -30,6 +33,17 @@ public:
   virtual SharedAnimation
   CreateAnimation(const std::vector<SharedImage> &images, float animationSpeed,
                   bool looping) = 0;
+
+  virtual SharedMesh CreateMesh(const ArrayProxy &nodes,
+                                const std::vector<uint16_t> &indices) = 0;
+
+  virtual SharedMesh CreateMesh(const ArrayProxy &nodes,
+                                const std::vector<uint32_t> &indices) = 0;
+
+  virtual void SetSceneMaterial(SharedISceneMaterial material) = 0;
+
+  virtual void Draw(SharedMesh mesh) = 0;
+  virtual void Draw(SharedMesh mesh, SharedIMaterial material) = 0;
 };
 SVEL_CLASS(Renderer)
 

@@ -46,7 +46,7 @@ public:
   void GetFrameSize(unsigned int &width, unsigned int &height);
 
   const vk::CommandPool &GetCommandPool();
-  vk::CommandBuffer &GetCommandBuffer();
+  vk::CommandBuffer *GetCommandBuffer();
 };
 SVEL_CLASS(Frame)
 

@@ -24,6 +24,9 @@ typedef std::vector<std::pair<AttributeType, unsigned int>> VertexDescription;
 class Pipeline {
 public:
   virtual ~Pipeline() {}
+
+  // TEMPORARY WORKAROUND
+  virtual void NotifyNewFrame() = 0;
 };
 SVEL_CLASS(Pipeline)
 
