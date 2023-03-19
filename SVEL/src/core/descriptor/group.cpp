@@ -4,6 +4,7 @@
 #include "set.h"
 
 #include <algorithm>
+#include <memory>
 #include <stdexcept>
 #include <vulkan/vulkan_handles.hpp>
 
@@ -20,6 +21,11 @@ void WriteHandler::WriteData(void *_data) {
   if (oldBuffer != _buffer->GetBufferIndex())
     _set->NotifyBufferChange(_binding);
   return;
+}
+
+void WriteHandler::Update(SharedSet set) {
+  _set = set;
+  _buffer = _set->GetBuffer(_binding);
 }
 
 void SetGroup::_createQueue(
@@ -50,18 +56,16 @@ SetGroup::SetGroup(std::shared_ptr<core::Device> device,
                    unsigned int maxFramesInFlight) {
   _staticAllocator = std::make_shared<Allocator>(device);
 
-  SetDetails details;
-
   // Populate details
   for (const auto &shader : shaders) {
     auto layouts = shader->GetLayout();
     auto flags = shader->GetStage();
     for (const auto &binding : layouts)
-      details.push_back({flags, binding});
+      _details.push_back({flags, binding});
   }
 
   // Sort incoming details
-  std::sort(details.begin(), details.end(),
+  std::sort(_details.begin(), _details.end(),
             [](const BindingInfo &a, const BindingInfo &b) {
               const auto &_a = a.second, _b = b.second;
               return _a.setId == _b.setId ? _a.bindingId < _b.bindingId
@@ -69,13 +73,13 @@ SetGroup::SetGroup(std::shared_ptr<core::Device> device,
             });
 
   // Assert start with setID 0
-  if (details.front().second.setId != 0)
+  if (_details.front().second.setId != 0)
     throw std::logic_error("A set with ID=0 is required.");
 
   unsigned int currentSet = 0;
   std::vector<vk::DescriptorSetLayoutBinding> layoutBindings;
   std::vector<BindingDetails> bindingDetails;
-  for (const auto &[shaderFlags, detail] : details) {
+  for (const auto &[shaderFlags, detail] : _details) {
     // Check if we entered a new set
     if (currentSet != detail.setId) {
       _createQueue(device, maxFramesInFlight, layoutBindings, bindingDetails);
@@ -100,7 +104,16 @@ SetGroup::SetGroup(std::shared_ptr<core::Device> device,
   _grabSets();
 }
 
-void SetGroup::NotifyNewFrame() { _grabSets(); }
+void SetGroup::NotifyNewFrame() {
+  // Get new sets from the queues
+  _grabSets();
+
+  // Update write handlers
+  for (const auto &[key, handler] : _writeHandlers) {
+    const uint32_t setId = key >> 16;
+    handler->Update(_queueDetails.at(setId).currentSet);
+  }
+}
 
 void SetGroup::Bind(vk::CommandBuffer &commandBuffer,
                     const vk::PipelineLayout &layout) {
@@ -119,8 +132,19 @@ const std::vector<vk::DescriptorSetLayout> &SetGroup::GetLayouts() {
   return _layouts;
 }
 
-WriteHandler SetGroup::GetBuffer(uint32_t setId, uint32_t binding) {
-  return WriteHandler(_queueDetails.at(setId).currentSet, binding);
+std::shared_ptr<WriteHandler> SetGroup::GetWriteHandler(uint32_t setId,
+                                                        uint32_t binding) {
+  // Check if we already have a write handler for this
+  uint32_t key = (setId << 16) | binding;
+  auto it = _writeHandlers.find(key);
+  if (it != _writeHandlers.end())
+    return it->second;
+
+  // Add new write handler
+  auto writeHandler = std::make_shared<WriteHandler>(
+      _queueDetails.at(setId).currentSet, binding);
+  _writeHandlers[key] = writeHandler;
+  return writeHandler;
 }
 
 unsigned int SetGroup::BindTexture(ImageDescriptor *texture, uint32_t setId,
@@ -132,3 +156,5 @@ void SetGroup::RebindTexture(unsigned int textureId, uint32_t setId,
                              uint32_t binding) {
   _queueDetails.at(setId).currentSet->BindTexture(textureId, binding);
 }
+
+const SetGroup::SetDetails &SetGroup::GetInterface() const { return _details; }

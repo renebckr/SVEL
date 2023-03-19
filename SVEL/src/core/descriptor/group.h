@@ -7,10 +7,17 @@
 #include "core/descriptor/set.h"
 #include "core/descriptor/textureInterface.hpp"
 #include "core/shader.h"
+#include "svel/config.h"
 
+#include <unordered_map>
 #include <vulkan/vulkan.hpp>
 
 namespace core::descriptor {
+
+struct QueueDetails {
+  UniqueSetQueue queue;
+  SharedSet currentSet = nullptr;
+};
 
 class WriteHandler {
 private:
@@ -21,21 +28,21 @@ private:
 public:
   WriteHandler(SharedSet set, uint32_t binding);
   void WriteData(void *_data);
+
+  void Update(SharedSet set);
 };
 
 class SetGroup {
-private:
+public:
   using BindingInfo = std::pair<vk::ShaderStageFlags, core::Shader::Binding>;
   using SetDetails = std::vector<BindingInfo>;
 
-  struct QueueDetails {
-    UniqueSetQueue queue;
-    SharedSet currentSet = nullptr;
-  };
-
+private:
   std::vector<vk::DescriptorSetLayout> _layouts;
   SharedAllocator _staticAllocator;
   std::vector<QueueDetails> _queueDetails;
+  SetDetails _details;
+  std::unordered_map<uint32_t, std::shared_ptr<WriteHandler>> _writeHandlers;
 
   void _createQueue(std::shared_ptr<core::Device> device, uint32_t copyCount,
                     std::vector<vk::DescriptorSetLayoutBinding> &layoutBindings,
@@ -52,11 +59,15 @@ public:
   void Bind(vk::CommandBuffer &commandBuffer, const vk::PipelineLayout &layout);
   const std::vector<vk::DescriptorSetLayout> &GetLayouts();
 
-  WriteHandler GetBuffer(uint32_t setId, uint32_t binding);
+  std::shared_ptr<WriteHandler> GetWriteHandler(uint32_t setId,
+                                                uint32_t binding);
   unsigned int BindTexture(ImageDescriptor *texture, uint32_t setId,
                            uint32_t binding);
   void RebindTexture(unsigned int textureId, uint32_t setId, uint32_t binding);
+
+  const SetDetails &GetInterface() const;
 };
+SVEL_CLASS(SetGroup)
 
 } // namespace core::descriptor
 

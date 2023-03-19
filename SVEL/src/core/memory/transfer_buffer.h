@@ -12,7 +12,7 @@
 
 #include <core/barrier.h>
 #include <core/memory/buffer.h>
-#include <util/array_proxy.hpp>
+#include <svel/util/array_proxy.hpp>
 
 #include <atomic>
 #include <functional>
@@ -84,7 +84,8 @@ public:
    * @param completionCallback Callback to use when transfer is completed
    */
   TransferBuffer(SharedDevice device, vk::CommandPool commandPool,
-                 const util::ArrayProxy &data, vk::BufferUsageFlags usage,
+                 const SVEL_NAMESPACE::ArrayProxy &data,
+                 vk::BufferUsageFlags usage,
                  TransferCompletionHandler completionCallback);
 
   /**

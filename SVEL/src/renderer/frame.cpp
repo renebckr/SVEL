@@ -124,7 +124,7 @@ void Frame::GetFrameSize(unsigned int &width, unsigned int &height) {
   height = (uint32_t)_boundPipeline->GetViewport().height;
 }
 
-vk::CommandBuffer &Frame::GetCommandBuffer() { return _currentBuffer; }
+vk::CommandBuffer *Frame::GetCommandBuffer() { return &_currentBuffer; }
 
 vk::PipelineLayout Frame::GetPipelineLayout() {
   return _boundPipeline->GetLayout();

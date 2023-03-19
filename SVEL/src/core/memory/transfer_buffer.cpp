@@ -11,7 +11,7 @@ void core::TransferBuffer::onTransferCompleted() {
 
 core::TransferBuffer::TransferBuffer(
     SharedDevice device, vk::CommandPool commandPool,
-    const util::ArrayProxy &data, vk::BufferUsageFlags _usage,
+    const SVEL_NAMESPACE::ArrayProxy &data, vk::BufferUsageFlags _usage,
     TransferCompletionHandler completionCallback)
     : _device(device), _commandPool(commandPool), _bufferSize(data.dataSize),
       _completionCallback(completionCallback) {

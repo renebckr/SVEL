@@ -1,9 +1,13 @@
 #include "renderer.h"
 #include "core/barrier.h"
 #include "renderer/pipeline/pipeline.h"
+#include "svel/detail/mesh.h"
 #include "svel/detail/pipeline.h"
 #include "texture/animation.h"
 #include "texture/texture.h"
+#include <renderer/material/material.h>
+#include <renderer/mesh/mesh.h>
+#include <renderer/pipeline/pipeline.h>
 #include <renderer/shader.h>
 
 using namespace SVEL_NAMESPACE;
@@ -44,12 +48,17 @@ VulkanRenderer::BuildPipeline(SharedShader vert, SharedShader frag,
 }
 
 void VulkanRenderer::BindPipeline(SharedPipeline pipeline) {
-  _currentFrame->BindPipeline(renderer::GetImpl(pipeline));
+  auto vulkanPipeline = renderer::GetImpl(pipeline);
+  _boundPipeline = vulkanPipeline;
+  _currentFrame->BindPipeline(vulkanPipeline);
+  if (_sceneMaterial != nullptr)
+    _sceneMaterial->__getImpl()->WriteAttributes();
 }
 
 void VulkanRenderer::UnbindPipeline() { _currentFrame->UnbindPipeline(); }
 
 SharedTexture VulkanRenderer::CreateTexture(SharedImage image) {
+  _boundPipeline = nullptr;
   auto texture = std::make_shared<Texture>(_device, image);
   texture->Dispatch(_persistentCommandPool,
                     std::make_shared<core::Barrier>(_device));
@@ -65,6 +74,34 @@ VulkanRenderer::CreateAnimation(const std::vector<SharedImage> &images,
   return animation;
 }
 
+SharedMesh VulkanRenderer::CreateMesh(const ArrayProxy &nodes,
+                                      const std::vector<uint16_t> &indices) {
+  return std::make_shared<Mesh>(_device, _persistentCommandPool, nodes, indices,
+                                vk::IndexType::eUint16);
+}
+
+SharedMesh VulkanRenderer::CreateMesh(const ArrayProxy &nodes,
+                                      const std::vector<uint32_t> &indices) {
+  return std::make_shared<Mesh>(_device, _persistentCommandPool, nodes, indices,
+                                vk::IndexType::eUint32);
+}
+
+void VulkanRenderer::SetSceneMaterial(SharedISceneMaterial material) {
+  _sceneMaterial = material;
+}
+
+void VulkanRenderer::Draw(SharedMesh mesh) {
+  mesh->Draw(*_currentRecordBuffer);
+}
+
+void VulkanRenderer::Draw(SharedMesh mesh, SharedIMaterial material) {
+  material->__getImpl()->WriteAttributes();
+  _boundPipeline->GetDescriptorGroup()->Bind(
+      *_currentRecordBuffer, _currentFrame->GetPipelineLayout());
+  mesh->Draw(*_currentRecordBuffer);
+}
+
 void VulkanRenderer::SelectFrame(renderer::SharedFrame frame) {
   _currentFrame = frame;
+  _currentRecordBuffer = _currentFrame->GetCommandBuffer();
 }

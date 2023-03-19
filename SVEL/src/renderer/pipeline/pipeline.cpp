@@ -232,3 +232,5 @@ VulkanPipeline::~VulkanPipeline() {
   vulkanDevice.destroyRenderPass(_renderPass);
   vulkanDevice.destroyPipelineLayout(_pipelineLayout);
 }
+
+void VulkanPipeline::NotifyNewFrame() { _setGroup->NotifyNewFrame(); }

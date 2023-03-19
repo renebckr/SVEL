@@ -6,7 +6,7 @@
 #include <memory>
 #include <vector>
 
-namespace util {
+namespace SVEL_NAMESPACE {
 
 struct ArrayProxy {
   void *data;
@@ -33,6 +33,6 @@ struct ArrayProxy {
         elementSize(sizeof(T)), elementCount(eC) {}
 };
 
-} // namespace util
+} // namespace SVEL_NAMESPACE
 
 #endif /* __UTIL_ARRAY_PROXY_HPP__ */

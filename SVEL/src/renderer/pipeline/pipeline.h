@@ -180,6 +180,10 @@ public:
    * @return const vk::PipelineLayout& Layout of the Pipeline
    */
   const vk::PipelineLayout &GetLayout() const { return _pipelineLayout; }
+
+  core::descriptor::SharedSetGroup GetDescriptorGroup() { return _setGroup; }
+
+  void NotifyNewFrame() final override;
 };
 SVEL_CLASS(VulkanPipeline)
 SVEL_DOWNCAST_IMPL(VulkanPipeline, SVEL_NAMESPACE::Pipeline)
