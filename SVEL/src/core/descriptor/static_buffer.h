@@ -7,7 +7,7 @@
 
 namespace core::descriptor {
 
-class StaticBuffer : public BufferInterface {
+class StaticBuffer final : public BufferInterface {
 private:
   core::SharedDevice _device;
   core::UniqueBuffer _buffer;

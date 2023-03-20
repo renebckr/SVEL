@@ -15,7 +15,7 @@ namespace core::descriptor {
 
 // Do NOT use this in a multi threaded environment. Allocate Buffers for every
 // thread!
-class DynamicBuffer : public BufferInterface {
+class DynamicBuffer final : public BufferInterface {
 private:
   core::SharedDevice _device;
   std::vector<std::pair<void *, core::UniqueBuffer>> _buffers;
