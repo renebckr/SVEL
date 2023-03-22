@@ -92,9 +92,12 @@ struct Vertex {
   glm::vec3 coord;
   glm::vec3 color;
   glm::vec2 tex;
+  glm::vec3 normal;
 
-  Vertex(glm::vec3 c, glm::vec3 co, glm::vec2 t)
-      : coord(c), color(co), tex(t) {}
+  Vertex(glm::vec3 c, glm::vec3 co, glm::vec2 t, glm::vec3 n)
+      : coord(c), color(co), tex(t), normal(n) {
+    std::cout << tex.x << " " << tex.y << std::endl;
+  }
 };
 
 std::vector<SharedMesh>
@@ -103,12 +106,7 @@ VulkanRenderer::LoadObjFile(const std::string &objFile) {
 
   io::obj::Parser parser(objFile);
   auto data = parser.Parse();
-  std::cout << data.size() << std::endl;
   for (const auto &meshData : data) {
-    std::cout << static_cast<int>(meshData->faceType) << std::endl;
-    std::cout << meshData->coordinates.size() << std::endl;
-    std::cout << meshData->normals.size() << std::endl;
-    std::cout << meshData->textureCoords.size() << std::endl;
     // Skip incomplete faces for now
     if (meshData->faceType !=
         io::obj::FaceDescriptionType::eCoordsTexCoordsNormals)
@@ -126,25 +124,21 @@ VulkanRenderer::LoadObjFile(const std::string &objFile) {
       auto coords = meshData->coordinates.at(std::get<0>(vertex) -
                                              1); // -1 as Ids start with 1
       auto texCoords = meshData->textureCoords.at(std::get<1>(vertex) - 1);
-      vertexData.emplace_back(coords, glm::vec3{1.0f, 1.0f, 1.0f}, texCoords);
+      auto normals = meshData->normals.at(std::get<2>(vertex) - 1);
+      vertexData.emplace_back(coords, glm::vec3{1.0f, 1.0f, 1.0f}, texCoords,
+                              normals);
       indiceMap[vertex] = index;
       index++;
     }
-    std::cout << vertexData.size() << std::endl;
 
     // Build indices list
     std::vector<uint32_t> indiceData;
-    for (const auto &face : meshData->faces) {
-      for (const auto &indice : face) {
-        std::cout << indiceMap[indice] << " ";
+    for (const auto &face : meshData->faces)
+      for (const auto &indice : face)
         indiceData.push_back(indiceMap[indice]);
-      }
-      std::cout << "\n";
-    }
 
     result.push_back(CreateMesh(vertexData, indiceData));
   }
-  std::cout << result.size() << std::endl;
   return result;
 }
 
