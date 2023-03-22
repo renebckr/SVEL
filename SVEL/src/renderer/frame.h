@@ -23,7 +23,7 @@ private:
   std::vector<vk::PipelineStageFlags> _waitStageMask;
   vk::CommandBufferAllocateInfo _mainCmdBufferInfo;
   vk::CommandBufferBeginInfo _mainCmdBufferBeginInfo;
-  vk::ClearValue _clearValue;
+  std::vector<vk::ClearValue> _clearValue;
   vk::SubmitInfo _submitInfo;
   vk::Queue _submitQueue;
   vk::Queue _presentQueue;

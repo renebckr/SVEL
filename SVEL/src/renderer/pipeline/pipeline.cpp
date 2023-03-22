@@ -12,6 +12,8 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <vulkan/vulkan_enums.hpp>
+#include <vulkan/vulkan_structs.hpp>
 
 using namespace renderer;
 using namespace SVEL_NAMESPACE;
@@ -81,6 +83,27 @@ void VulkanPipeline::_buildVertexInputStateInfo(
       &_vertexBindingDescription,
       (uint32_t)_vertexInputAttributeDescriptions.size(),
       _vertexInputAttributeDescriptions.data());
+}
+
+vk::Format
+VulkanPipeline::_findSupportedFormat(const std::vector<vk::Format> &formats,
+                                     vk::ImageTiling tiling,
+                                     vk::FormatFeatureFlags featureFlags) {
+  const auto &physicalDevice = _device->GetPhysicalDevice();
+  for (const auto &format : formats) {
+    const auto &formatProps = physicalDevice.getFormatProperties(format);
+
+    if (tiling == vk::ImageTiling::eLinear &&
+        (formatProps.linearTilingFeatures & featureFlags) == featureFlags) {
+      return format;
+    } else if (tiling == vk::ImageTiling::eOptimal &&
+               (formatProps.optimalTilingFeatures & featureFlags) ==
+                   featureFlags) {
+      return format;
+    }
+  }
+
+  throw std::runtime_error("failed to find supported format.");
 }
 
 VulkanPipeline::VulkanPipeline(core::SharedDevice device,
@@ -166,30 +189,78 @@ VulkanPipeline::VulkanPipeline(core::SharedDevice device,
   _pipelineLayout = vulkanDevice.createPipelineLayout(pipelineLayoutInfo);
 
   // Render Pass START
-  vk::AttachmentDescription attachmentDescription(
+
+  // Color Attachment
+  vk::AttachmentDescription colorAttachment(
       vk::AttachmentDescriptionFlagBits(),
       _swapchain->GetSelectedFormat().format, vk::SampleCountFlagBits::e1,
       vk::AttachmentLoadOp::eClear, vk::AttachmentStoreOp::eStore,
       vk::AttachmentLoadOp::eDontCare, vk::AttachmentStoreOp::eDontCare,
       vk::ImageLayout::eUndefined, vk::ImageLayout::ePresentSrcKHR);
 
-  vk::AttachmentReference attachmentReference(
+  vk::AttachmentReference colorReference(
       0, vk::ImageLayout::eColorAttachmentOptimal);
+
+  // Depth Attachment
+  auto depthFormat = _findSupportedFormat(
+      {vk::Format::eD32Sfloat, vk::Format::eD32SfloatS8Uint,
+       vk::Format::eD24UnormS8Uint},
+      vk::ImageTiling::eOptimal,
+      vk::FormatFeatureFlagBits::eDepthStencilAttachment);
+
+  _depthBuffer = std::make_shared<core::Image>(
+      _device,
+      vk::Extent2D{surfaceCapabilities.currentExtent.width,
+                   surfaceCapabilities.currentExtent.height},
+      depthFormat, vk::ImageUsageFlagBits::eDepthStencilAttachment,
+      vk::ImageAspectFlagBits::eDepth);
+
+  vk::AttachmentDescription depthAttachment{};
+  depthAttachment.format = depthFormat;
+  depthAttachment.samples = vk::SampleCountFlagBits::e1;
+  depthAttachment.loadOp = vk::AttachmentLoadOp::eClear;
+  depthAttachment.storeOp = vk::AttachmentStoreOp::eDontCare;
+  depthAttachment.stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
+  depthAttachment.stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
+  depthAttachment.initialLayout = vk::ImageLayout::eUndefined;
+  depthAttachment.finalLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
+
+  vk::PipelineDepthStencilStateCreateInfo depthStencil{};
+  depthStencil.depthTestEnable = VK_TRUE;
+  depthStencil.depthWriteEnable = VK_TRUE;
+  depthStencil.depthCompareOp = vk::CompareOp::eLess;
+  depthStencil.depthBoundsTestEnable = VK_FALSE;
+  depthStencil.minDepthBounds = 0.0f; // Optional
+  depthStencil.maxDepthBounds = 1.0f; // Optional
+  depthStencil.stencilTestEnable = VK_FALSE;
+  depthStencil.front = vk::StencilOpState(); // Optional
+  depthStencil.back = vk::StencilOpState();  // Optional
+
+  vk::AttachmentReference depthAttachmentRef{
+      1, vk::ImageLayout::eDepthStencilAttachmentOptimal};
 
   vk::SubpassDescription subpassDescription(
       vk::SubpassDescriptionFlagBits(), vk::PipelineBindPoint::eGraphics, 0,
       nullptr, // TODO: Later
-      1, &attachmentReference, nullptr, nullptr, 0, nullptr);
+      1, &colorReference, nullptr, &depthAttachmentRef, 0, nullptr);
 
   vk::SubpassDependency subpassDependency(
-      VK_SUBPASS_EXTERNAL, 0, vk::PipelineStageFlagBits::eColorAttachmentOutput,
-      vk::PipelineStageFlagBits::eColorAttachmentOutput, vk::AccessFlagBits(),
+      VK_SUBPASS_EXTERNAL, 0,
+      vk::PipelineStageFlagBits::eColorAttachmentOutput |
+          vk::PipelineStageFlagBits::eEarlyFragmentTests,
+      vk::PipelineStageFlagBits::eColorAttachmentOutput |
+          vk::PipelineStageFlagBits::eEarlyFragmentTests,
+      vk::AccessFlagBits(),
       vk::AccessFlagBits::eColorAttachmentRead |
-          vk::AccessFlagBits::eColorAttachmentWrite,
+          vk::AccessFlagBits::eColorAttachmentWrite |
+          vk::AccessFlagBits::eDepthStencilAttachmentWrite,
       vk::DependencyFlagBits());
+  // ---
 
+  std::array<vk::AttachmentDescription, 2> attachments = {colorAttachment,
+                                                          depthAttachment};
   vk::RenderPassCreateInfo renderPassInfo(
-      vk::RenderPassCreateFlagBits(), 1, &attachmentDescription, 1,
+      vk::RenderPassCreateFlagBits(), attachments.size(), attachments.data(), 1,
       &subpassDescription, 1, &subpassDependency);
 
   _renderPass = vulkanDevice.createRenderPass(renderPassInfo);
@@ -199,7 +270,8 @@ VulkanPipeline::VulkanPipeline(core::SharedDevice device,
       vk::PipelineCreateFlagBits(), 2, &pipelineShaderStages[0],
       &_vertexInputStateInfo, &pipelineInputAssemblyStateInfo, nullptr,
       &pipelineViewportStateInfo, &pipelineRasterizationStateInfo,
-      &pipelineMultisampleStateInfo, nullptr, &pipelineColorBlendStateInfo,
+      &pipelineMultisampleStateInfo, &depthStencil,
+      &pipelineColorBlendStateInfo,
       nullptr, //&pipelineDynamicStateInfo,
       _pipelineLayout, _renderPass, 0, VK_NULL_HANDLE);
 
@@ -211,13 +283,17 @@ VulkanPipeline::VulkanPipeline(core::SharedDevice device,
           .value.front();
 
   // Create Framebuffers
+  std::array<vk::ImageView, 2> framebufferAttachments = {
+      nullptr, _depthBuffer->GetImageView()};
+
   vk::FramebufferCreateInfo framebufferCreateInfo(
-      vk::FramebufferCreateFlagBits(), _renderPass, 1, nullptr,
+      vk::FramebufferCreateFlagBits(), _renderPass,
+      framebufferAttachments.size(), framebufferAttachments.data(),
       surfaceCapabilities.currentExtent.width,
       surfaceCapabilities.currentExtent.height, 1);
 
   for (auto imageView : _swapchain->GetImageViews()) {
-    framebufferCreateInfo.pAttachments = &imageView;
+    framebufferAttachments[0] = imageView;
     _framebuffers.push_back(
         vulkanDevice.createFramebuffer(framebufferCreateInfo));
   }

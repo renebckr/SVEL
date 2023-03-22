@@ -63,7 +63,7 @@ void Parser::_handleFace(const std::string &str, std::shared_ptr<Model> model) {
   if (substrings.size() != 3)
     return; // Ignore non tris for now
 
-  Model::Primitive p;
+  Model::Primitive p{};
   for (const auto &indices : substrings) {
     std::array<size_t, 3> data{0, 0, 0};
     std::stringstream ss;
@@ -80,6 +80,8 @@ void Parser::_handleFace(const std::string &str, std::shared_ptr<Model> model) {
     p.push_back(indice);
     model->vertices.insert(indice);
   }
+  if (p.empty())
+    return;
   model->faces.push_back(p);
 }
 
@@ -128,7 +130,7 @@ std::vector<std::shared_ptr<Model>> Parser::Parse() {
   std::shared_ptr<Model> model = nullptr;
   while (!in.eof()) {
     // Get line
-    std::string line;
+    std::string line{};
     std::getline(in, line);
 
     if (line.size() < 2) // make sure there are at least two characters

@@ -13,6 +13,7 @@
 
 #include "core/descriptor/group.h"
 #include "core/device.h"
+#include "core/image.h"
 #include "core/shader.h"
 #include "core/surface.h"
 #include "core/swapchain.h"
@@ -90,6 +91,8 @@ private:
 
   std::shared_ptr<core::descriptor::SetGroup> _setGroup;
 
+  core::SharedImage _depthBuffer;
+
   /**
    * @brief Size of a vertex.
    */
@@ -118,6 +121,10 @@ private:
    */
   void _buildVertexInputStateInfo(
       const SVEL_NAMESPACE::VertexDescription &vertexDescription);
+
+  vk::Format _findSupportedFormat(const std::vector<vk::Format> &formats,
+                                  vk::ImageTiling tiling,
+                                  vk::FormatFeatureFlags featureFlags);
 
 public:
   /**

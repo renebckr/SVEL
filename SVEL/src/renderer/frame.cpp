@@ -31,8 +31,9 @@ Frame::Frame(core::SharedDevice device, core::SharedSwapchain swapchain)
   _mainCmdBufferBeginInfo = vk::CommandBufferBeginInfo(
       vk::CommandBufferUsageFlagBits::eOneTimeSubmit, nullptr);
 
-  _clearValue = vk::ClearValue(
-      vk::ClearColorValue().setFloat32({0.0f, 0.0f, 0.0f, 0.0f}));
+  _clearValue.push_back(vk::ClearValue(
+      vk::ClearColorValue().setFloat32({0.0f, 0.0f, 0.0f, 0.0f})));
+  _clearValue.push_back(vk::ClearValue(vk::ClearDepthStencilValue(1.0f, 0.0f)));
 
   _waitStageMask = {vk::PipelineStageFlagBits::eColorAttachmentOutput};
   _submitInfo = vk::SubmitInfo(1, &_imageAvailable, _waitStageMask.data(), 1,
@@ -83,7 +84,7 @@ void Frame::BindPipeline(SharedVulkanPipeline pipeline) {
       {{0, 0},
        {(uint32_t)pipeline->GetViewport().width,
         (uint32_t)pipeline->GetViewport().height}},
-      1, &_clearValue);
+      (uint32_t)_clearValue.size(), _clearValue.data());
 
   // Record Command Buffer
   _currentBuffer.beginRenderPass(renderPassBegin, vk::SubpassContents::eInline);
