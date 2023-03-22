@@ -57,6 +57,9 @@ public:
   CreateMesh(const SVEL_NAMESPACE::ArrayProxy &nodes,
              const std::vector<uint32_t> &indices) override;
 
+  std::vector<SVEL_NAMESPACE::SharedMesh>
+  LoadObjFile(const std::string &objFile) override;
+
   void SetSceneMaterial(SVEL_NAMESPACE::SharedISceneMaterial material) override;
 
   void Draw(SVEL_NAMESPACE::SharedMesh mesh) override;

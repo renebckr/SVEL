@@ -1,7 +1,7 @@
 #ifndef __CORE_DESCRIPTOR_DYNAMIC_BUFFER_H__
 #define __CORE_DESCRIPTOR_DYNAMIC_BUFFER_H__
 
-#include "core/descriptor/buffer_interface.h"
+#include "core/descriptor/buffer.h"
 #include "core/device.h"
 #include "core/memory/buffer.h"
 
@@ -15,7 +15,7 @@ namespace core::descriptor {
 
 // Do NOT use this in a multi threaded environment. Allocate Buffers for every
 // thread!
-class DynamicBuffer final : public BufferInterface {
+class DynamicBuffer final : public IBuffer {
 private:
   core::SharedDevice _device;
   std::vector<std::pair<void *, core::UniqueBuffer>> _buffers;
@@ -35,7 +35,7 @@ public:
   ~DynamicBuffer();
 
   vk::DescriptorType GetType() const override;
-  WriteInfo Write(void *data) override;
+  WriteResult Write(void *data) override;
   uint32_t GetBufferIndex() override;
   uint32_t GetBufferOffset() override;
   void Reset() override;

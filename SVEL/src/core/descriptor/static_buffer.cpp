@@ -22,9 +22,9 @@ StaticBuffer::~StaticBuffer() {
 
 vk::DescriptorType StaticBuffer::GetType() const { return _descriptorType; }
 
-StaticBuffer::WriteInfo StaticBuffer::Write(void *_data) {
+StaticBuffer::WriteResult StaticBuffer::Write(void *_data) {
   std::memcpy(_memoryPointer, _data, _size);
-  return WriteInfo::eSuccess;
+  return WriteResult::eSuccess;
 }
 
 void StaticBuffer::Reset() {}

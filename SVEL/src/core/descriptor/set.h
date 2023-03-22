@@ -2,7 +2,7 @@
 #define __CORE_DESCRIPTOR_SET_H__
 
 #include "core/descriptor/allocator.h"
-#include "core/descriptor/buffer_interface.h"
+#include "core/descriptor/buffer.h"
 #include "core/descriptor/textureInterface.hpp"
 #include "core/device.h"
 
@@ -30,16 +30,16 @@ private:
   vk::DescriptorSet _baseDescriptorSet;
   std::unordered_map<std::vector<uint32_t>, vk::DescriptorSet, VectorHasher>
       _descriptorSetCache;
-  std::unordered_map<uint32_t, SharedBufferInterface> _buffers;
+  std::unordered_map<uint32_t, SharedIBuffer> _buffers;
   std::vector<ImageDescriptor *> _boundTextures;
-  std::vector<SharedBufferInterface> _dynamicBuffers;
+  std::vector<SharedIBuffer> _dynamicBuffers;
   std::unordered_map<uint32_t, uint32_t> _bindingToWriteSetMapping;
   std::vector<vk::WriteDescriptorSet> _writeSets;
   std::vector<uint32_t> _bufferIndices;
   bool _isBaseDescriptorSetOutdated;
 
-  SharedBufferInterface _createBuffer(const BindingDetails &_bindingDetails,
-                                      bool &_out_dynamicBuffer);
+  SharedIBuffer _createBuffer(const BindingDetails &_bindingDetails,
+                              bool &_out_dynamicBuffer);
 
 public:
   static void
@@ -49,7 +49,7 @@ public:
       vk::DescriptorSetLayout layout, std::vector<BindingDetails> &details);
   Set(const Set &) = delete;
 
-  SharedBufferInterface GetBuffer(uint32_t binding);
+  SharedIBuffer GetBuffer(uint32_t binding);
   vk::DescriptorSet Get(std::vector<uint32_t> &out_offsets);
   void Reset();
   void NotifyBufferChange(uint32_t binding);

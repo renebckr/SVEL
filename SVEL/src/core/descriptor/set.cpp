@@ -12,8 +12,8 @@ uint32_t Set::VectorHasher::operator()(const std::vector<uint32_t> &V) const {
   return hash;
 }
 
-SharedBufferInterface Set::_createBuffer(const BindingDetails &bindingDetails,
-                                         bool &out_dynamicBuffer) {
+SharedIBuffer Set::_createBuffer(const BindingDetails &bindingDetails,
+                                 bool &out_dynamicBuffer) {
   // Check if this is a dynamic Buffer
   if (bindingDetails.type == vk::DescriptorType::eStorageBufferDynamic ||
       bindingDetails.type == vk::DescriptorType::eUniformBufferDynamic) {
@@ -77,9 +77,7 @@ Set::Set(core::SharedDevice device, SharedAllocator staticAllocator,
   _bufferIndices.assign(details.size(), 0);
 }
 
-SharedBufferInterface Set::GetBuffer(uint32_t binding) {
-  return _buffers[binding];
-}
+SharedIBuffer Set::GetBuffer(uint32_t binding) { return _buffers[binding]; }
 
 vk::DescriptorSet Set::Get(std::vector<uint32_t> &out_offsets) {
   // Append Offsets

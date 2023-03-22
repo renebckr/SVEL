@@ -2,7 +2,7 @@
 #define ENGINE_DESCRIPTOR_GROUP_H
 
 #include "core/descriptor/allocator.h"
-#include "core/descriptor/buffer_interface.h"
+#include "core/descriptor/buffer.h"
 #include "core/descriptor/queue.h"
 #include "core/descriptor/set.h"
 #include "core/descriptor/textureInterface.hpp"
@@ -23,7 +23,7 @@ class WriteHandler {
 private:
   SharedSet _set;
   uint32_t _binding;
-  SharedBufferInterface _buffer;
+  SharedIBuffer _buffer;
 
 public:
   WriteHandler(SharedSet set, uint32_t binding);

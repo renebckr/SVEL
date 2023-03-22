@@ -1,13 +1,13 @@
 #ifndef __CORE_DESCRIPTOR_STATIC_BUFFER_H__
 #define __CORE_DESCRIPTOR_STATIC_BUFFER_H__
 
-#include "buffer_interface.h"
+#include "buffer.h"
 #include "core/device.h"
 #include "core/memory/buffer.h"
 
 namespace core::descriptor {
 
-class StaticBuffer final : public BufferInterface {
+class StaticBuffer final : public IBuffer {
 private:
   core::SharedDevice _device;
   core::UniqueBuffer _buffer;
@@ -21,7 +21,7 @@ public:
   ~StaticBuffer();
 
   vk::DescriptorType GetType() const override;
-  WriteInfo Write(void *_data) override;
+  WriteResult Write(void *_data) override;
   void Reset() override;
 };
 

@@ -40,6 +40,8 @@ public:
   virtual SharedMesh CreateMesh(const ArrayProxy &nodes,
                                 const std::vector<uint32_t> &indices) = 0;
 
+  virtual std::vector<SharedMesh> LoadObjFile(const std::string &objFile) = 0;
+
   virtual void SetSceneMaterial(SharedISceneMaterial material) = 0;
 
   virtual void Draw(SharedMesh mesh) = 0;

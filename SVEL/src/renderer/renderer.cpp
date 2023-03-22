@@ -1,10 +1,12 @@
 #include "renderer.h"
 #include "core/barrier.h"
+#include "io/obj/parser.h"
 #include "renderer/pipeline/pipeline.h"
 #include "svel/detail/mesh.h"
 #include "svel/detail/pipeline.h"
 #include "texture/animation.h"
 #include "texture/texture.h"
+#include <iostream>
 #include <renderer/material/material.h>
 #include <renderer/mesh/mesh.h>
 #include <renderer/pipeline/pipeline.h>
@@ -84,6 +86,66 @@ SharedMesh VulkanRenderer::CreateMesh(const ArrayProxy &nodes,
                                       const std::vector<uint32_t> &indices) {
   return std::make_shared<Mesh>(_device, _persistentCommandPool, nodes, indices,
                                 vk::IndexType::eUint32);
+}
+
+struct Vertex {
+  glm::vec3 coord;
+  glm::vec3 color;
+  glm::vec2 tex;
+
+  Vertex(glm::vec3 c, glm::vec3 co, glm::vec2 t)
+      : coord(c), color(co), tex(t) {}
+};
+
+std::vector<SharedMesh>
+VulkanRenderer::LoadObjFile(const std::string &objFile) {
+  std::vector<SharedMesh> result{};
+
+  io::obj::Parser parser(objFile);
+  auto data = parser.Parse();
+  std::cout << data.size() << std::endl;
+  for (const auto &meshData : data) {
+    std::cout << static_cast<int>(meshData->faceType) << std::endl;
+    std::cout << meshData->coordinates.size() << std::endl;
+    std::cout << meshData->normals.size() << std::endl;
+    std::cout << meshData->textureCoords.size() << std::endl;
+    // Skip incomplete faces for now
+    if (meshData->faceType !=
+        io::obj::FaceDescriptionType::eCoordsTexCoordsNormals)
+      continue;
+
+    std::vector<Vertex> vertexData;
+    vertexData.reserve(meshData->faces.size() * 3);
+    std::vector<io::obj::Model::Indices> vertices(meshData->vertices.begin(),
+                                                  meshData->vertices.end());
+
+    // Build vertices
+    std::unordered_map<io::obj::Model::Indices, uint32_t> indiceMap;
+    uint32_t index = 0;
+    for (const auto &vertex : vertices) {
+      auto coords = meshData->coordinates.at(std::get<0>(vertex) -
+                                             1); // -1 as Ids start with 1
+      auto texCoords = meshData->textureCoords.at(std::get<1>(vertex) - 1);
+      vertexData.emplace_back(coords, glm::vec3{1.0f, 1.0f, 1.0f}, texCoords);
+      indiceMap[vertex] = index;
+      index++;
+    }
+    std::cout << vertexData.size() << std::endl;
+
+    // Build indices list
+    std::vector<uint32_t> indiceData;
+    for (const auto &face : meshData->faces) {
+      for (const auto &indice : face) {
+        std::cout << indiceMap[indice] << " ";
+        indiceData.push_back(indiceMap[indice]);
+      }
+      std::cout << "\n";
+    }
+
+    result.push_back(CreateMesh(vertexData, indiceData));
+  }
+  std::cout << result.size() << std::endl;
+  return result;
 }
 
 void VulkanRenderer::SetSceneMaterial(SharedISceneMaterial material) {

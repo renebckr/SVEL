@@ -42,7 +42,7 @@ void DynamicBuffer::_updateBufferInfo(uint32_t bufferIndex) {
 
 vk::DescriptorType DynamicBuffer::GetType() const { return _descriptorType; }
 
-DynamicBuffer::WriteInfo DynamicBuffer::Write(void *data) {
+DynamicBuffer::WriteResult DynamicBuffer::Write(void *data) {
   bool requiredAllocation = false;
   uint32_t newBufferIndex =
       (uint32_t)(_head / SVEL_DESCRIPTOR_DYNAMIC_BUFFER_SIZE);
@@ -66,8 +66,8 @@ DynamicBuffer::WriteInfo DynamicBuffer::Write(void *data) {
       data, _elementSize);
 
   if (requiredAllocation)
-    return WriteInfo::eNeededReallocation;
-  return WriteInfo::eSuccess;
+    return WriteResult::eNeededReallocation;
+  return WriteResult::eSuccess;
 }
 
 uint32_t DynamicBuffer::GetBufferIndex() { return _currentBufferIndex; }

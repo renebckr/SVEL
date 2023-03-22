@@ -44,6 +44,7 @@ CPMAddPackage(
     GITHUB_REPOSITORY g-truc/glm
     GIT_TAG 0.9.9.8
 )
+include_directories(SYSTEM ${glm_SOURCE_DIR})
 
 message(INFO "${glm_SOURCE_DIR}")
 CPMAddPackage(
