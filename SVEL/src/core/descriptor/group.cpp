@@ -31,7 +31,7 @@ void WriteHandler::Update(SharedSet set) {
 void SetGroup::_createQueue(
     std::shared_ptr<core::Device> device, uint32_t copyCount,
     std::vector<vk::DescriptorSetLayoutBinding> &layoutBindings,
-    std::vector<BindingDetails> &bindingDetails) {
+    std::vector<Set::BindingDetails> &bindingDetails) {
   auto layout = _staticAllocator->CreateLayout(layoutBindings);
   // Need to create Sets
   std::vector<SharedSet> newSets;
@@ -78,7 +78,7 @@ SetGroup::SetGroup(std::shared_ptr<core::Device> device,
 
   unsigned int currentSet = 0;
   std::vector<vk::DescriptorSetLayoutBinding> layoutBindings;
-  std::vector<BindingDetails> bindingDetails;
+  std::vector<Set::BindingDetails> bindingDetails;
   for (const auto &[shaderFlags, detail] : _details) {
     // Check if we entered a new set
     if (currentSet != detail.setId) {
@@ -98,7 +98,7 @@ SetGroup::SetGroup(std::shared_ptr<core::Device> device,
         detail.bindingId, detail.type, 1, shaderFlags, nullptr));
 
     bindingDetails.push_back(
-        BindingDetails{detail.bindingId, detail.type, detail.elementSize});
+        Set::BindingDetails{detail.bindingId, detail.type, detail.elementSize});
   }
   _createQueue(device, maxFramesInFlight, layoutBindings, bindingDetails);
   _grabSets();

@@ -1,6 +1,19 @@
+/**
+ * @file set.cpp
+ * @author René Pascal Becker (rene.becker2@gmx.de)
+ * @brief Implementation of the Set.
+ * @date 2023-03-23
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
+// Local
 #include "set.h"
-#include "core/descriptor/dynamic_buffer.h"
-#include "core/descriptor/static_buffer.h"
+
+// Internal
+#include <core/descriptor/dynamic_buffer.h>
+#include <core/descriptor/static_buffer.h>
 
 using namespace core::descriptor;
 
@@ -72,7 +85,7 @@ Set::Set(core::SharedDevice device, SharedAllocator staticAllocator,
   _device->AsVulkanObj().updateDescriptorSets(_writeSets, {});
 
   // Set Buffer Indices
-  _bufferIndices.assign(details.size(), 0);
+  _setIdentifiers.assign(details.size(), 0);
 }
 
 SharedIBuffer Set::GetBuffer(uint32_t binding) { return _buffers[binding]; }
@@ -88,14 +101,14 @@ vk::DescriptorSet Set::Get(std::vector<uint32_t> &out_offsets) {
     return _baseDescriptorSet;
 
   // Check Cache
-  auto it = _descriptorSetCache.find(_bufferIndices);
+  auto it = _descriptorSetCache.find(_setIdentifiers);
   if (it == _descriptorSetCache.end()) {
     // We need to allocate a new descriptorSet
     auto set = _dynamicAllocator->AllocateSet(_layout);
     for (auto &writeSet : _writeSets)
       writeSet.setDstSet(set);
     _device->AsVulkanObj().updateDescriptorSets(_writeSets, {});
-    _descriptorSetCache[_bufferIndices] = set;
+    _descriptorSetCache[_setIdentifiers] = set;
     return set;
   }
   return it->second;
@@ -112,7 +125,7 @@ void Set::Reset() {
 
   // Reset WriteSets
   for (auto &bindingToWrite : _bindingToWriteSetMapping) {
-    _bufferIndices[bindingToWrite.second] = 0;
+    _setIdentifiers[bindingToWrite.second] = 0;
     auto &writeSet = _writeSets[bindingToWrite.second];
     auto buffer = _buffers[bindingToWrite.first];
 
@@ -134,7 +147,7 @@ void Set::NotifyBufferChange(uint32_t binding) {
   auto buffer = _buffers[binding];
 
   // Update Indices and writeSet
-  _bufferIndices[index] = buffer->GetBufferIndex();
+  _setIdentifiers[index] = buffer->GetBufferIndex();
   _writeSets[index].setBufferInfo(buffer->GetBufferInfo());
   _isBaseDescriptorSetOutdated = true;
 }
@@ -151,7 +164,7 @@ void Set::BindTexture(unsigned int identifier, uint32_t binding) {
   uint32_t index = _bindingToWriteSetMapping[binding];
 
   // Update Indices and writeSet
-  _bufferIndices[index] = identifier;
+  _setIdentifiers[index] = identifier;
   _writeSets[index].setImageInfo(_boundTextures[identifier]->GetImageInfo());
   _isBaseDescriptorSetOutdated = true;
 }

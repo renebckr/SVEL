@@ -24,8 +24,11 @@ void Allocator::_allocatePool() {
         size.first, (uint32_t)(size.second * SVEL_DESCRIPTOR_POOL_SIZE)));
 
   // Create pool
-  vk::DescriptorPoolCreateInfo createInfo(vk::DescriptorPoolCreateFlagBits(),
-                                          SVEL_DESCRIPTOR_POOL_SIZE, sizes);
+  vk::DescriptorPoolCreateInfo createInfo(
+      vk::DescriptorPoolCreateFlagBits::
+          eFreeDescriptorSet, // Use this for very cheap allocation of
+                              // descriptor sets
+      SVEL_DESCRIPTOR_POOL_SIZE, sizes);
 
   // Add to available pools
   _availablePools.push(_device->AsVulkanObj().createDescriptorPool(createInfo));

@@ -46,7 +46,7 @@ private:
 
   void _createQueue(std::shared_ptr<core::Device> device, uint32_t copyCount,
                     std::vector<vk::DescriptorSetLayoutBinding> &layoutBindings,
-                    std::vector<BindingDetails> &bindingDetails);
+                    std::vector<Set::BindingDetails> &bindingDetails);
   void _grabSets();
 
 public:
