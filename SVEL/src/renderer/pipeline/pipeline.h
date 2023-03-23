@@ -13,7 +13,7 @@
 
 #include "core/descriptor/group.h"
 #include "core/device.h"
-#include "core/image.h"
+#include "core/memory/image.h"
 #include "core/shader.h"
 #include "core/surface.h"
 #include "core/swapchain.h"

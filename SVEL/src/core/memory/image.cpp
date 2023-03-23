@@ -1,3 +1,14 @@
+/**
+ * @file image.cpp
+ * @author René Pascal Becker (rene.becker2@gmx.de)
+ * @brief Implementation of the Image.
+ * @date 2023-03-23
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
+// Local
 #include "image.h"
 
 using namespace core;

@@ -8,12 +8,14 @@
  *
  */
 
+// Local
 #include "surface.h"
-#include "window.h"
 
+// GLFW
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-#include <iostream>
+
+// Vulkan
 #include <vulkan/vulkan.hpp>
 
 core::Surface::Surface(core::SharedInstance instance,

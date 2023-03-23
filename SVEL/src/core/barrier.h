@@ -10,14 +10,20 @@
 #ifndef __CORE_BARIER_H__
 #define __CORE_BARIER_H__
 
-#include <core/device.h>
+// Local
+#include "device.h"
+
+// Internal
 #include <util/vulkan_object.hpp>
 
+// Vulkan
+#include <vulkan/vulkan.hpp>
+
+// STL
 #include <functional>
 #include <memory>
 #include <unordered_map>
 #include <vector>
-#include <vulkan/vulkan.hpp>
 
 namespace core {
 
@@ -95,7 +101,7 @@ public:
   /**
    * @brief Add Ressources to the Barrier.
    *
-   * @param fence Fence to wait on for these ressources.
+   * @param fence     Fence to wait on for these ressources.
    * @param resources Ressources that depend on the given Fence.
    */
   void AddResource(SharedFence fence, std::vector<Notifier> resources);
@@ -103,16 +109,16 @@ public:
   /**
    * @brief Add a Ressource to the Barrier.
    *
-   * @param fence Fence to wait on for the ressource.
-   * @param resource Ressource that depends on the given Fence.
+   * @param fence     Fence to wait on for the ressource.
+   * @param resource  Ressource that depends on the given Fence.
    */
   void AddResource(SharedFence fence, Notifier resource);
 
   /**
    * @brief Is this Barrier completed?
    *
-   * @return true Barrier has completed.
-   * @return false Barrier is not yet completed.
+   * @return true   Barrier has completed.
+   * @return false  Barrier is not yet completed.
    */
   bool IsCompleted();
 

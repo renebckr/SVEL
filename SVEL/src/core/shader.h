@@ -1,10 +1,24 @@
+/**
+ * @file shader.h
+ * @author René Pascal Becker (rene.becker2@gmx.de)
+ * @brief Declaration of Shader.
+ * @date 2023-03-23
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
 #ifndef __CORE_SHADER_H__
 #define __CORE_SHADER_H__
 
-#include "core/device.h"
-#include "util/vulkan_object.hpp"
+// Local
+#include "device.h"
 
+// Internal
 #include <svel/detail/shader.h>
+#include <util/vulkan_object.hpp>
+
+// Vulkan
 #include <vulkan/vulkan.hpp>
 
 namespace core {
@@ -12,17 +26,35 @@ namespace core {
 class Shader : public util::VulkanAdapter<vk::ShaderModule> {
 public:
   /**
-   * @brief Type of Shader
+   * @brief Type of Shader.
    */
   enum class Type {
-    VERTEX = static_cast<int>(SVEL_NAMESPACE::Shader::Type::eVertex),
-    FRAGMENT = static_cast<int>(SVEL_NAMESPACE::Shader::Type::eFragment)
+    eVertex = static_cast<int>(SVEL_NAMESPACE::Shader::Type::eVertex),
+    eFragment = static_cast<int>(SVEL_NAMESPACE::Shader::Type::eFragment)
   };
 
+  /**
+   * @brief Compound that describes a binding for a shader.
+   */
   struct Binding {
+    /**
+     * @brief Set id of the binding.
+     */
     uint32_t setId;
+
+    /**
+     * @brief Binding id inside of the set.
+     */
     uint32_t bindingId;
+
+    /**
+     * @brief Type of the binding.
+     */
     vk::DescriptorType type;
+
+    /**
+     * @brief Size of a single element in the binding if applicable.
+     */
     size_t elementSize;
   };
 
@@ -37,6 +69,9 @@ private:
    */
   vk::ShaderStageFlags _stage;
 
+  /**
+   * @brief List of all bindings the shader has.
+   */
   std::vector<Binding> _bindings;
 
   /**
@@ -58,9 +93,9 @@ public:
   /**
    * @brief Construct a new Shader Module.
    *
-   * @param device Device to use
-   * @param path Path to the shader file
-   * @param type Type of the shader module
+   * @param device  Device to use
+   * @param path    Path to the shader file
+   * @param type    Type of the shader module
    */
   Shader(core::SharedDevice device, const std::string &path, Type type);
 
@@ -76,9 +111,19 @@ public:
    */
   vk::ShaderStageFlags GetStage() const;
 
-  void AddBinding(const Binding &setLayout);
+  /**
+   * @brief Adds a binding to the shader.
+   *
+   * @param setLayout Layout of the binding.
+   */
+  void AddBinding(const Binding &bindingInfo);
 
-  const std::vector<Binding> &GetLayout() const;
+  /**
+   * @brief Getter for the binding layout.
+   *
+   * @return const std::vector<Binding>& The binding layout.
+   */
+  const std::vector<Binding> &GetBindingLayout() const;
 };
 SVEL_CLASS(Shader);
 

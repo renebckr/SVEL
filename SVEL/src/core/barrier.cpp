@@ -8,12 +8,12 @@
  *
  */
 
-#include <core/barrier.h>
-#include <core/device.h>
+// Local
+#include "barrier.h"
 
+// STL
 #include <limits>
 #include <stdexcept>
-#include <vulkan/vulkan.hpp>
 
 core::Fence::Fence(SharedDevice device) : _device(device) {
   _vulkanObj = _device->AsVulkanObj().createFence({});

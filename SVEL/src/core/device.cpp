@@ -8,16 +8,24 @@
  *
  */
 
+// Local
 #include "device.h"
 
+// Internal
+#include <util/prioritized_order.hpp>
+
+// GLFW
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-#include <iostream>
-#include <stdexcept>
-#include <util/prioritized_order.hpp>
+
+// Vulkan
 #include <vulkan/vulkan_core.h>
 #include <vulkan/vulkan_enums.hpp>
 #include <vulkan/vulkan_handles.hpp>
+
+// STL
+#include <iostream>
+#include <stdexcept>
 
 std::vector<unsigned int> core::Device::prioritizePhysicalDevices(
     const std::vector<vk::PhysicalDevice> &devices) {

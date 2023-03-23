@@ -11,14 +11,18 @@
 #ifndef __CORE_SURFACE_H_
 #define __CORE_SURFACE_H_
 
-#include <core/instance.h>
-#include <core/window.h>
-#include <svel/detail/app.h>
+// Local
+#include "instance.h"
+#include "window.h"
 
+// Internal
 #include <util/vulkan_object.hpp>
 
-#include <memory>
+// Vulkan
 #include <vulkan/vulkan.hpp>
+
+// STL
+#include <memory>
 
 namespace core {
 
@@ -41,16 +45,25 @@ public:
   /**
    * @brief Construct a Surface.
    *
-   * @param window Window that the surface should use
-   * @param instance Instance that the surface should use
+   * @param window    Window that the surface should use
+   * @param instance  Instance that the surface should use
    */
   Surface(core::SharedInstance instance, core::SharedVulkanWindow window);
 
+  /**
+   * @brief Cannot be copied.
+   */
   Surface(const Surface &) = delete;
+
+  /**
+   * @brief Cannot be copied.
+   *
+   * @return Surface& ~unused~
+   */
   Surface &operator=(const Surface &) = delete;
 
   /**
-   * @brief Destroy the Surface
+   * @brief Destroy the Surface.
    */
   ~Surface();
 };

@@ -55,7 +55,7 @@ SetGroup::SetGroup(std::shared_ptr<core::Device> device,
 
   // Populate interface
   for (const auto &shader : shaders) {
-    auto layouts = shader->GetLayout();
+    auto layouts = shader->GetBindingLayout();
     auto flags = shader->GetStage();
     for (const auto &binding : layouts)
       _interface.push_back({flags, binding});

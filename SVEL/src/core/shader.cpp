@@ -8,8 +8,10 @@
  *
  */
 
+// Local
 #include "shader.h"
 
+// STL
 #include <fstream>
 #include <stdexcept>
 
@@ -40,10 +42,10 @@ std::vector<char> Shader::_loadShaderFile(const std::string &path) {
 
 void Shader::_setStageFlags(Type type) {
   switch (type) {
-  case Shader::Type::VERTEX:
+  case Shader::Type::eVertex:
     _stage = vk::ShaderStageFlagBits::eVertex;
     break;
-  case Shader::Type::FRAGMENT:
+  case Shader::Type::eFragment:
     _stage = vk::ShaderStageFlagBits::eFragment;
     break;
   default:
@@ -57,7 +59,7 @@ Shader::Shader(core::SharedDevice device, const std::string &path, Type type)
   auto data = _loadShaderFile(path);
   _setStageFlags(type);
 
-  if (data.size() % 4 != 0)
+  if (data.size() % 4 != 0) // Shader files have compiled size of 4 * n bytes
     throw std::runtime_error("Shader file is invalid/corrupted.");
 
   vk::ShaderModuleCreateInfo shaderModuleInfo(
@@ -70,10 +72,10 @@ Shader::~Shader() { _device->AsVulkanObj().destroyShaderModule(_vulkanObj); }
 
 vk::ShaderStageFlags Shader::GetStage() const { return _stage; }
 
-void Shader::AddBinding(const Binding &setLayout) {
-  _bindings.emplace_back(setLayout);
+void Shader::AddBinding(const Binding &bindingInfo) {
+  _bindings.emplace_back(bindingInfo);
 }
 
-const std::vector<Shader::Binding> &Shader::GetLayout() const {
+const std::vector<Shader::Binding> &Shader::GetBindingLayout() const {
   return _bindings;
 }

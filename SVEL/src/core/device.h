@@ -8,15 +8,14 @@
  *
  */
 
-#ifndef ENGINE_CORE_DEVICE_H
-#define ENGINE_CORE_DEVICE_H
+#ifndef __CORE_DEVICE_H__
+#define __CORE_DEVICE_H__
 
-#include <core/surface.h>
-#include <svel/detail/app.h>
+// Local
+#include "surface.h"
 
+// Internal
 #include <util/vulkan_object.hpp>
-
-#include <vulkan/vulkan.hpp>
 
 namespace core {
 
@@ -26,7 +25,14 @@ namespace core {
  */
 class Device : public util::VulkanAdapter<vk::Device> {
 private:
+  /**
+   * @brief Instance to use.
+   */
   core::SharedInstance _instance;
+
+  /**
+   * @brief Surface to use.
+   */
   core::SharedSurface _surface;
 
   /**
@@ -84,32 +90,47 @@ private:
   findQueueFamilies(vk::PhysicalDevice device, uint32_t &constraintQueueCount);
 
 public:
+  /**
+   * @brief Construct a Device with the provided instance and surface.
+   *
+   * @param instance  Instance to use.
+   * @param surface   Surface to use.
+   */
   Device(core::SharedInstance instance, core::SharedSurface surface);
 
+  /**
+   * @brief The device should not be copied.
+   */
   Device(const Device &) = delete;
+
+  /**
+   * @brief The device should not be copied.
+   *
+   * @return Device& ~unused~
+   */
   Device &operator=(const Device &) = delete;
 
   /**
-   * @brief Destroy the Device
+   * @brief Destroy the Device.
    */
   ~Device();
 
   /**
-   * @brief Getter for Physical Device
+   * @brief Getter for Physical Device.
    *
    * @return vk::PhysicalDevice The Physical Device in use.
    */
   vk::PhysicalDevice GetPhysicalDevice() { return _selectedPhysicalDevice; }
 
   /**
-   * @brief Getter for Graphics Queue Family
+   * @brief Getter for Graphics Queue Family.
    *
    * @return uint32_t The GraphicsQueueFamily to use.
    */
   uint32_t GetGraphicsQueueFamily() { return _queueFamilyGraphics; }
 
   /**
-   * @brief Getter for Present Queue Family
+   * @brief Getter for Present Queue Family.
    *
    * @return uint32_t The PresentQueueFamily to use.
    */
@@ -119,4 +140,4 @@ SVEL_CLASS(Device)
 
 } // namespace core
 
-#endif /* ENGINE_CORE_DEVICE_H */
+#endif /* __CORE_DEVICE_H__ */

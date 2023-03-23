@@ -8,12 +8,16 @@
  *
  */
 
+// Local
 #include "swapchain.h"
 #include "device.h"
 
+// Internal
+#include <util/prioritized_order.hpp>
+
+// STL
 #include <cstdint>
 #include <limits>
-#include <util/prioritized_order.hpp>
 
 vk::SurfaceFormatKHR core::Swapchain::_findSurfaceFormat() {
   // Preferences

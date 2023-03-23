@@ -8,10 +8,13 @@
  *
  */
 
+// Local
 #include "window.h"
 
+// GLFW
 #include <GLFW/glfw3.h>
-#include <iostream>
+
+// STL
 #include <stdexcept>
 
 core::VulkanWindow::VulkanWindow(const std::string &title,

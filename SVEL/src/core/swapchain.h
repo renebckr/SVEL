@@ -1,11 +1,24 @@
+/**
+ * @file swapchain.h
+ * @author René Pascal Becker (rene.becker2@gmx.de)
+ * @brief Declaration of the Swapchain.
+ * @date 2023-03-23
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
 #ifndef __CORE_SWAPCHAIN_H__
 #define __CORE_SWAPCHAIN_H__
 
-#include <core/device.h>
-#include <core/surface.h>
+// Local
+#include "device.h"
+#include "surface.h"
 
+// Internal
 #include <util/vulkan_object.hpp>
 
+// Vulkan
 #include <vulkan/vulkan.hpp>
 
 namespace core {
@@ -19,6 +32,10 @@ private:
    * @brief Device to use.
    */
   core::SharedDevice _device;
+
+  /**
+   * @brief Surface to use.
+   */
   core::SharedSurface _surface;
 
   /**
@@ -51,11 +68,20 @@ public:
    * @brief Construct a Swapchain.
    *
    * @param surface Surface to use
-   * @param device Device to use
+   * @param device  Device to use
    */
   Swapchain(core::SharedDevice device, core::SharedSurface surface);
 
+  /**
+   * @brief Cannot be copied.
+   */
   Swapchain(const Swapchain &) = delete;
+
+  /**
+   * @brief Cannot be copied.
+   *
+   * @return Swapchain& ~unused~
+   */
   Swapchain &operator=(const Swapchain &) = delete;
 
   /**
