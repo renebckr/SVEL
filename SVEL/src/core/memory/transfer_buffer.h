@@ -10,13 +10,19 @@
 #ifndef __CORE_MEMORY_TRANSFER_BUFFER_HPP__
 #define __CORE_MEMORY_TRANSFER_BUFFER_HPP__
 
+// Local
+#include "buffer.h"
+
+// Internal
 #include <core/barrier.h>
-#include <core/memory/buffer.h>
 #include <svel/util/array_proxy.hpp>
 
+// Vulkan
+#include <vulkan/vulkan.hpp>
+
+// STL
 #include <atomic>
 #include <functional>
-#include <vulkan/vulkan.hpp>
 
 namespace core {
 
@@ -76,12 +82,13 @@ public:
   /**
    * @brief Construct a Transfer Buffer.
    *
-   * @param device Device to use
-   * @param commandPool Command Pool from which to allocate a command buffer
-   * @param data Data to send to the GPU
-   * @param dataLength Length of the Data
-   * @param usage Buffer Usage Flags to pass
-   * @param completionCallback Callback to use when transfer is completed
+   * @param device              Device to use
+   * @param commandPool         Command Pool from which to allocate a command
+   *                            buffer
+   * @param data                Data to send to the GPU
+   * @param dataLength          Length of the Data
+   * @param usage               Buffer Usage Flags to pass
+   * @param completionCallback  Callback to use when transfer is completed
    */
   TransferBuffer(SharedDevice device, vk::CommandPool commandPool,
                  const SVEL_NAMESPACE::ArrayProxy &data,
@@ -91,8 +98,8 @@ public:
   /**
    * @brief Transfer the buffer.
    *
-   * @param _barrier Barrier on which to add the fence. This barrier has to be
-   * waited on to complete transfer!
+   * @param _barrier  Barrier on which to add the fence. This barrier has to be
+   *                  waited on to complete transfer!
    */
   void TransferData(Barrier *barrier);
 };

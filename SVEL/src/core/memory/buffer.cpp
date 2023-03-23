@@ -7,14 +7,20 @@
  * @copyright Copyright (c) 2022
  */
 
-#include <core/device.h>
-#include <core/memory/buffer.h>
+// Local
+#include "buffer.h"
 
-#include <limits>
-#include <stdexcept>
+// Internal
+#include <core/device.h>
+
+// Vulkan
 #include <vulkan/vulkan_core.h>
 #include <vulkan/vulkan_enums.hpp>
 #include <vulkan/vulkan_structs.hpp>
+
+// STL
+#include <limits>
+#include <stdexcept>
 
 core::Buffer::Buffer(core::SharedDevice device, size_t size,
                      vk::BufferUsageFlags usage,

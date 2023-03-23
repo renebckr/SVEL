@@ -1,8 +1,21 @@
+/**
+ * @file device_memory.h
+ * @author René Pascal Becker (rene.becker2@gmx.de)
+ * @brief Declaration of DeviceMemory.
+ * @date 2023-03-23
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
 #ifndef __CORE_MEMORY_DEVICE_MEMORY_H__
 #define __CORE_MEMORY_DEVICE_MEMORY_H__
 
+// Internal
 #include <core/device.h>
 #include <util/vulkan_object.hpp>
+
+// Vulkan
 #include <vulkan/vulkan.hpp>
 
 namespace core {
@@ -20,9 +33,9 @@ private:
   /**
    * @brief Finds an appropriate memory type for the given flags and type bits.
    *
-   * @param memoryFlags Memory Flags to search for.
-   * @param memoryTypeBits Memory Type Bits to search for.
-   * @return uint32_t Found memory type
+   * @param memoryFlags     Memory Flags to search for.
+   * @param memoryTypeBits  Memory Type Bits to search for.
+   * @return uint32_t       Found memory type
    */
   uint32_t _findMemoryType(vk::MemoryPropertyFlags memoryFlags,
                            uint32_t memoryTypeBits);
@@ -31,9 +44,9 @@ public:
   /**
    * @brief Construct Memory
    *
-   * @param device Device to use.
-   * @param requirements Requirements put on the memory.
-   * @param properties Properties of the memory.
+   * @param device        Device to use.
+   * @param requirements  Requirements put on the memory.
+   * @param properties    Properties of the memory.
    */
   DeviceMemory(SharedDevice device, vk::MemoryRequirements &requirements,
                vk::MemoryPropertyFlags properties);

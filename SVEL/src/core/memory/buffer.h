@@ -1,10 +1,24 @@
+/**
+ * @file buffer.h
+ * @author René Pascal Becker (rene.becker2@gmx.de)
+ * @brief Buffer declaration.
+ * @date 2023-03-23
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
 #ifndef __CORE_MEMORY_BUFFER_H__
 #define __CORE_MEMORY_BUFFER_H__
 
+// Local
+#include "device_memory.h"
+
+// Internal
 #include <core/device.h>
-#include <core/memory/device_memory.h>
 #include <util/vulkan_object.hpp>
 
+// Vulkan
 #include <vulkan/vulkan.hpp>
 
 namespace core {
@@ -34,10 +48,10 @@ public:
   /**
    * @brief Construct a Buffer
    *
-   * @param device Device to use.
-   * @param size Size of the Buffer.
-   * @param usage Usage of the Buffer.
-   * @param memFlags What memory to use.
+   * @param device    Device to use.
+   * @param size      Size of the Buffer.
+   * @param usage     Usage of the Buffer.
+   * @param memFlags  What memory to use.
    */
   Buffer(SharedDevice device, size_t size, vk::BufferUsageFlags usage,
          vk::MemoryPropertyFlags memFlags);

@@ -8,7 +8,8 @@
  *
  */
 
-#include <core/memory/device_memory.h>
+// Local
+#include "device_memory.h"
 
 uint32_t
 core::DeviceMemory::_findMemoryType(vk::MemoryPropertyFlags memoryFlags,

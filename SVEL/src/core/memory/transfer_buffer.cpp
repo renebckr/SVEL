@@ -1,10 +1,25 @@
-#include <core/barrier.h>
-#include <core/memory/buffer.h>
-#include <core/memory/transfer_buffer.h>
+/**
+ * @file transfer_buffer.cpp
+ * @author René Pascal Becker (rene.becker2@gmx.de)
+ * @brief Implementation of the TransferBuffer.
+ * @date 2023-03-23
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
 
+// Local
+#include "transfer_buffer.h"
+#include "buffer.h"
+
+// Internal
+#include <core/barrier.h>
+
+// STL
 #include <memory>
 
 void core::TransferBuffer::onTransferCompleted() {
+  // Free resources and run callback
   _device->AsVulkanObj().freeCommandBuffers(_commandPool, _commandBuffer);
   _completionCallback(_transferredBuffer);
 }
@@ -17,6 +32,7 @@ core::TransferBuffer::TransferBuffer(
       _completionCallback(completionCallback) {
   auto vulkanDevice = device->AsVulkanObj();
 
+  // Create staging buffer
   _stagingBuffer = std::make_unique<Buffer>(
       device, _bufferSize, vk::BufferUsageFlagBits::eTransferSrc,
       vk::MemoryPropertyFlagBits::eHostVisible |
@@ -43,6 +59,7 @@ void core::TransferBuffer::TransferData(Barrier *barrier) {
   _commandBuffer =
       _device->AsVulkanObj().allocateCommandBuffers(commandBufferInfo)[0];
 
+  // Record to buffer
   vk::CommandBufferBeginInfo beginInfo(
       vk::CommandBufferUsageFlagBits::eOneTimeSubmit, nullptr);
 
@@ -52,6 +69,7 @@ void core::TransferBuffer::TransferData(Barrier *barrier) {
                             vk::BufferCopy(0, 0, _bufferSize));
   _commandBuffer.end();
 
+  // Submit to graphics queue
   vk::SubmitInfo submitInfo(0, nullptr, nullptr, 1, &_commandBuffer, 0,
                             nullptr);
 
