@@ -76,9 +76,8 @@ void Parser::_handleFace(const std::string &str, std::shared_ptr<Model> model) {
       ss.clear();
     }
 
-    auto indice = Model::Indices(data[0], data[1], data[2]);
-    p.push_back(indice);
-    model->vertices.insert(indice);
+    p.emplace_back(data[0], data[1], data[2]);
+    model->vertices.emplace(data[0], data[1], data[2]);
   }
   if (p.empty())
     return;
@@ -93,13 +92,13 @@ bool Parser::_handleMeshFinalization(std::shared_ptr<Model> model) {
   auto indice = model->faces.front().front();
 
   // Invalid faces if vertices have invalid ids
-  bool hasVertices = std::get<0>(indice) != 0;
+  bool hasVertices = indice.coordId != 0;
   if (!hasVertices)
     return false;
 
   // Set face description type
-  bool hasTexCoords = std::get<1>(indice) != 0;
-  bool hasNormals = std::get<2>(indice) != 0;
+  bool hasTexCoords = indice.texId != 0;
+  bool hasNormals = indice.normalId != 0;
   if (hasTexCoords && hasNormals)
     model->faceType = FaceDescriptionType::eCoordsTexCoordsNormals;
   else if (!hasTexCoords && hasNormals)

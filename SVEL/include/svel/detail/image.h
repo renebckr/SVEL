@@ -16,6 +16,7 @@ private:
   int _channels, _dataChannels;
   unsigned char *_data = nullptr;
   size_t _dataSize;
+  bool _loadedFromFile = false;
 
 public:
   Image(const Extent &size, int channels, int dataChannels, unsigned char *data,

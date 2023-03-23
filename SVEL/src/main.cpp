@@ -14,15 +14,18 @@ int main(int argc, char *argv[]) {
     if (glfwVulkanSupported() != GLFW_TRUE)
       throw std::runtime_error("Vulkan not supported.");
 
-    {
+    try {
+
       sv::SharedIApplication app = svel_make_app(argc, argv);
       app->Run();
+    } catch (const std::exception &e) {
+      std::cout << e.what() << std::endl;
+    } catch (...) {
     }
 
     glfwTerminate();
-  } catch (const std::exception &e) {
-    std::cout << e.what() << std::endl;
   } catch (...) {
     return EXIT_FAILURE;
   }
+  return EXIT_SUCCESS;
 }

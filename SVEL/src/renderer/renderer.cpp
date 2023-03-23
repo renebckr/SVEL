@@ -88,16 +88,15 @@ SharedMesh VulkanRenderer::CreateMesh(const ArrayProxy &nodes,
                                 vk::IndexType::eUint32);
 }
 
-struct Vertex {
+struct VertexData {
   glm::vec3 coord;
   glm::vec3 color;
   glm::vec2 tex;
   glm::vec3 normal;
 
-  Vertex(glm::vec3 c, glm::vec3 co, glm::vec2 t, glm::vec3 n)
-      : coord(c), color(co), tex(t), normal(n) {
-    std::cout << tex.x << " " << tex.y << std::endl;
-  }
+  VertexData(const glm::vec3 &c, const glm::vec3 &co, const glm::vec2 &t,
+             const glm::vec3 &n)
+      : coord(c), color(co), tex(t), normal(n) {}
 };
 
 std::vector<SharedMesh>
@@ -112,27 +111,28 @@ VulkanRenderer::LoadObjFile(const std::string &objFile) {
         io::obj::FaceDescriptionType::eCoordsTexCoordsNormals)
       continue;
 
-    std::vector<Vertex> vertexData;
-    vertexData.reserve(meshData->faces.size() * 3);
-    std::vector<io::obj::Model::Indices> vertices(meshData->vertices.begin(),
-                                                  meshData->vertices.end());
+    std::vector<io::obj::Model::Indice> vertices(meshData->vertices.begin(),
+                                                 meshData->vertices.end());
 
     // Build vertices
-    std::unordered_map<io::obj::Model::Indices, uint32_t> indiceMap;
+    std::unordered_map<io::obj::Model::Indice, uint32_t,
+                       io::obj::Model::Indice::HashFunction>
+        indiceMap{};
+    std::vector<VertexData> vertexData{};
     uint32_t index = 0;
     for (const auto &vertex : vertices) {
-      auto coords = meshData->coordinates.at(std::get<0>(vertex) -
-                                             1); // -1 as Ids start with 1
-      auto texCoords = meshData->textureCoords.at(std::get<1>(vertex) - 1);
-      auto normals = meshData->normals.at(std::get<2>(vertex) - 1);
-      vertexData.emplace_back(coords, glm::vec3{1.0f, 1.0f, 1.0f}, texCoords,
-                              normals);
-      indiceMap[vertex] = index;
+      const auto &coords = meshData->coordinates.at(
+          vertex.coordId - 1); // -1 as Ids start with 1
+      const auto &texCoords = meshData->textureCoords.at(vertex.texId - 1);
+      const auto &normals = meshData->normals.at(vertex.normalId - 1);
+      vertexData.push_back(
+          VertexData(coords, glm::vec3{1.0f, 1.0f, 1.0f}, texCoords, normals));
+      indiceMap.emplace(vertex, index);
       index++;
     }
 
     // Build indices list
-    std::vector<uint32_t> indiceData;
+    std::vector<uint32_t> indiceData{};
     for (const auto &face : meshData->faces)
       for (const auto &indice : face)
         indiceData.push_back(indiceMap[indice]);

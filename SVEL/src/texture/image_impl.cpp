@@ -29,9 +29,15 @@ Image::Image(const std::string &_path) {
   _size.height = (uint32_t)height;
   _dataChannels = 4;
   _dataSize = _size.width * _size.height * (unsigned int)_dataChannels;
+  _loadedFromFile = true;
 }
 
-Image::~Image() { delete[] _data; }
+Image::~Image() {
+  if (_loadedFromFile)
+    stbi_image_free(_data);
+  else
+    delete[] _data;
+}
 
 unsigned char *Image::GetData() const { return _data; }
 

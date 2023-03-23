@@ -13,7 +13,7 @@ class Image : public util::VulkanAdapter<vk::Image> {
 private:
   core::SharedDevice _device;
 
-  core::SharedDeviceMemory _memory;
+  core::UniqueDeviceMemory _memory;
   vk::ImageView _imageView;
   vk::Format _format;
 
