@@ -166,7 +166,7 @@ public:
    *
    * @param device          Device to use.
    * @param staticAllocator Static allocator to use for the base set.
-   * @param layout          Pipeline descriptor set layout to use.
+   * @param layout          Descriptor set layout to use.
    * @param details         Description of the bindings used in the set.
    */
   Set(core::SharedDevice device, SharedAllocator staticAllocator,

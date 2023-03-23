@@ -1,5 +1,5 @@
-#ifndef __CORE_DESCRIPTOR_IMAGE_H__
-#define __CORE_DESCRIPTOR_IMAGE_H__
+#ifndef __CORE_DESCRIPTOR_IMAGE_HPP__
+#define __CORE_DESCRIPTOR_IMAGE_HPP__
 
 // Vulkan
 #include <vulkan/vulkan.hpp>
@@ -34,4 +34,4 @@ public:
 
 } // namespace core::descriptor
 
-#endif /* __CORE_DESCRIPTOR_IMAGE_H__ */
+#endif /* __CORE_DESCRIPTOR_IMAGE_HPP__ */
