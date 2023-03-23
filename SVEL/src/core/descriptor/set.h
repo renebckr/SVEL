@@ -3,7 +3,7 @@
 
 #include "core/descriptor/allocator.h"
 #include "core/descriptor/buffer.h"
-#include "core/descriptor/textureInterface.hpp"
+#include "core/descriptor/image.hpp"
 #include "core/device.h"
 
 #include <unordered_map>

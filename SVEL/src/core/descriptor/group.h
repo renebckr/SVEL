@@ -3,9 +3,9 @@
 
 #include "core/descriptor/allocator.h"
 #include "core/descriptor/buffer.h"
+#include "core/descriptor/image.hpp"
 #include "core/descriptor/queue.h"
 #include "core/descriptor/set.h"
-#include "core/descriptor/textureInterface.hpp"
 #include "core/shader.h"
 #include "svel/config.h"
 

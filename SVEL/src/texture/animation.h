@@ -1,7 +1,7 @@
 #ifndef ENGINE_TEXTURE_ANIMATION_H
 #define ENGINE_TEXTURE_ANIMATION_H
 
-#include "core/descriptor/textureInterface.hpp"
+#include "core/descriptor/image.hpp"
 #include "core/device.h"
 #include "svel/detail/texture.h"
 #include "texture.h"

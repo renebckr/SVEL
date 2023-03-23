@@ -2,7 +2,7 @@
 #define __TEXTURE_TEXTURE_H__
 
 #include "core/barrier.h"
-#include "core/descriptor/textureInterface.hpp"
+#include "core/descriptor/image.hpp"
 #include "core/device.h"
 #include "core/memory/buffer.h"
 #include "core/memory/device_memory.h"
