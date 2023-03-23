@@ -1,37 +1,54 @@
+/**
+ * @file dynamic_buffer.cpp
+ * @author René Pascal Becker (rene.becker2@gmx.de)
+ * @brief Implementation of the dynamic buffer.
+ * @date 2023-03-23
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
+// Local
 #include "dynamic_buffer.h"
 
 using namespace core::descriptor;
 
 DynamicBuffer::DynamicBuffer(std::shared_ptr<core::Device> device,
-                             unsigned int alignment, size_t elementSize,
-                             vk::DescriptorType type)
-    : _device(device), _alignment(alignment), _elementSize(elementSize),
-      _descriptorType(type) {
+                             size_t elementSize, vk::DescriptorType type)
+    : _device(device), _elementSize(elementSize), _descriptorType(type) {
+  // Translate the type to buffer usage using base class
   _usage = _getUsage(type);
-  _head = _currentBufferIndex = _bufferOffset = 0;
+
+  auto minAlignment = _device->GetPhysicalDevice()
+                          .getProperties()
+                          .limits.minUniformBufferOffsetAlignment;
 
   // Since alignment has to be a power of 2
-  _alignedElementSize = (_alignment + _elementSize - 1) & ~(_alignment - 1);
+  _alignedElementSize = (minAlignment + _elementSize - 1) & ~(minAlignment - 1);
   _bufferSize = _alignedElementSize * SVEL_DESCRIPTOR_DYNAMIC_BUFFER_SIZE;
+
+  // Allocate the first buffer
   _allocateBuffer();
 }
 
 DynamicBuffer::~DynamicBuffer() {
-  for (const auto &buffer : _buffers) {
+  for (const auto &buffer : _buffers)
     _device->AsVulkanObj().unmapMemory(buffer.second->GetMemory());
-  }
 }
 
 void DynamicBuffer::_allocateBuffer() {
+  // Create buffer
   auto buffer = std::make_unique<core::Buffer>(
       _device, _bufferSize, _usage,
       vk::MemoryPropertyFlagBits::eHostVisible |
           vk::MemoryPropertyFlagBits::eHostCoherent);
+
+  // Get memory pointer from the buffer
   void *memoryPointer = _device->AsVulkanObj().mapMemory(
       buffer->GetMemory(), 0, _bufferSize, vk::MemoryMapFlagBits());
-  _buffers.push_back({memoryPointer, std::move(buffer)});
 
-  // Update info
+  // Update buffers and the info
+  _buffers.push_back({memoryPointer, std::move(buffer)});
   _updateBufferInfo((uint32_t)_buffers.size() - 1);
 }
 
@@ -43,6 +60,7 @@ void DynamicBuffer::_updateBufferInfo(uint32_t bufferIndex) {
 vk::DescriptorType DynamicBuffer::GetType() const { return _descriptorType; }
 
 DynamicBuffer::WriteResult DynamicBuffer::Write(void *data) {
+  // Update buffer offset
   bool requiredAllocation = false;
   uint32_t newBufferIndex =
       (uint32_t)(_head / SVEL_DESCRIPTOR_DYNAMIC_BUFFER_SIZE);
@@ -50,6 +68,7 @@ DynamicBuffer::WriteResult DynamicBuffer::Write(void *data) {
                                        SVEL_DESCRIPTOR_DYNAMIC_BUFFER_SIZE)) *
                              _alignedElementSize);
 
+  // New head position
   _head++;
 
   // Check if we need a new Buffer

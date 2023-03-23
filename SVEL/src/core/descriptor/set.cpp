@@ -17,10 +17,8 @@ SharedIBuffer Set::_createBuffer(const BindingDetails &bindingDetails,
   // Check if this is a dynamic Buffer
   if (bindingDetails.type == vk::DescriptorType::eStorageBufferDynamic ||
       bindingDetails.type == vk::DescriptorType::eUniformBufferDynamic) {
-    auto deviceLimits = _device->GetPhysicalDevice().getProperties().limits;
     auto buffer = std::make_shared<DynamicBuffer>(
-        _device, (unsigned int)deviceLimits.minUniformBufferOffsetAlignment,
-        bindingDetails.elementSize, bindingDetails.type);
+        _device, bindingDetails.elementSize, bindingDetails.type);
     out_dynamicBuffer = true;
     return buffer;
   }
