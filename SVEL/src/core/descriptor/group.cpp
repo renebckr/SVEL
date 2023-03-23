@@ -10,24 +10,6 @@
 
 using namespace core::descriptor;
 
-WriteHandler::WriteHandler(SharedSet set, uint32_t binding)
-    : _set(set), _binding(binding) {
-  _buffer = _set->GetBuffer(_binding);
-}
-
-void WriteHandler::WriteData(void *_data) {
-  unsigned int oldBuffer = _buffer->GetBufferIndex();
-  _buffer->Write(_data);
-  if (oldBuffer != _buffer->GetBufferIndex())
-    _set->NotifyBufferChange(_binding);
-  return;
-}
-
-void WriteHandler::Update(SharedSet set) {
-  _set = set;
-  _buffer = _set->GetBuffer(_binding);
-}
-
 void SetGroup::_createQueue(
     std::shared_ptr<core::Device> device, uint32_t copyCount,
     std::vector<vk::DescriptorSetLayoutBinding> &layoutBindings,

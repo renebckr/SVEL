@@ -11,10 +11,12 @@
 #ifndef __CORE_DESCRIPTOR_SET_H__
 #define __CORE_DESCRIPTOR_SET_H__
 
+// Local
+#include "allocator.h"
+#include "buffer.h"
+#include "image.hpp"
+
 // Internal
-#include <core/descriptor/allocator.h>
-#include <core/descriptor/buffer.h>
-#include <core/descriptor/image.hpp>
 #include <core/device.h>
 
 // STL
@@ -196,10 +198,9 @@ public:
 
   /**
    * @brief Should be called by anybody who wrote to a buffer provided by
-   * GetBuffer and then got a needed allocation result from the write.
+   * GetBuffer and then noticed a buffer index change.
    *
-   * @param binding Binding of the buffer that issued the eNeededAllocation on
-   *                write.
+   * @param binding Binding identifier of the buffer.
    */
   void NotifyBufferChange(uint32_t binding);
 

@@ -39,7 +39,8 @@ vk::SurfaceFormatKHR core::Swapchain::_findSurfaceFormat() {
 vk::PresentModeKHR core::Swapchain::_findPresentMode() {
   // Preferences
   std::vector<vk::PresentModeKHR> priorities = {
-      vk::PresentModeKHR::eMailbox, vk::PresentModeKHR::eFifo,
+      vk::PresentModeKHR::eFifo,    // VSYNC
+      vk::PresentModeKHR::eMailbox, // Draw newest
       vk::PresentModeKHR::eFifoRelaxed, vk::PresentModeKHR::eImmediate};
 
   // Fetch possible present modes

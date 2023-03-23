@@ -8,6 +8,7 @@
 #include "core/descriptor/set.h"
 #include "core/shader.h"
 #include "svel/config.h"
+#include "write_handler.h"
 
 #include <unordered_map>
 #include <vulkan/vulkan.hpp>
@@ -17,19 +18,6 @@ namespace core::descriptor {
 struct QueueDetails {
   UniqueSetQueue queue;
   SharedSet currentSet = nullptr;
-};
-
-class WriteHandler {
-private:
-  SharedSet _set;
-  uint32_t _binding;
-  SharedIBuffer _buffer;
-
-public:
-  WriteHandler(SharedSet set, uint32_t binding);
-  void WriteData(void *_data);
-
-  void Update(SharedSet set);
 };
 
 class SetGroup {

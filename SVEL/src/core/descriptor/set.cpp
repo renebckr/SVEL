@@ -10,10 +10,8 @@
 
 // Local
 #include "set.h"
-
-// Internal
-#include <core/descriptor/dynamic_buffer.h>
-#include <core/descriptor/static_buffer.h>
+#include "dynamic_buffer.h"
+#include "static_buffer.h"
 
 using namespace core::descriptor;
 

@@ -12,7 +12,7 @@
 #define __CORE_DESCRIPTOR_DYNAMIC_BUFFER_H__
 
 // Local
-#include <core/descriptor/buffer.h>
+#include "buffer.h"
 
 // Internal
 #include <core/device.h>
