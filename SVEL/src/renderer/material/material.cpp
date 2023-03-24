@@ -1,7 +1,23 @@
+/**
+ * @file material.cpp
+ * @author René Pascal Becker (rene.becker2@gmx.de)
+ * @brief Implementation of the Material and it's Impl.
+ * @date 2023-03-24
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
+// Local
 #include "material.h"
+
+// Internal
+#include <core/descriptor/util.hpp>
+#include <texture/texture.h>
+
+// STL
 #include <iostream>
 #include <stdexcept>
-#include <texture/texture.h>
 
 using namespace SVEL_NAMESPACE;
 
@@ -13,7 +29,8 @@ IMaterial::Impl::Impl(renderer::SharedVulkanPipeline pipeline)
   // Setup known interface information
   const auto &interface = pipeline->GetDescriptorGroup()->GetInterface();
   for (const auto &[_, binding] : interface) {
-    const uint32_t key = (binding.setId << 16) | binding.bindingId;
+    const uint64_t key =
+        core::descriptor::CombineSetBinding(binding.setId, binding.bindingId);
     _slotTypes[key] = {binding.type, binding.elementSize};
   }
 }
@@ -21,7 +38,7 @@ IMaterial::Impl::Impl(renderer::SharedVulkanPipeline pipeline)
 bool IMaterial::Impl::AddAttribute(uint32_t setId, uint32_t binding, void *data,
                                    size_t dataSize) {
   // Check if it has already been added
-  uint32_t key = (setId << 16) | binding;
+  const uint64_t key = core::descriptor::CombineSetBinding(setId, binding);
   if (_attributes.find(key) != _attributes.end())
     throw std::invalid_argument("Cannot add attribute twice.");
 
@@ -56,8 +73,7 @@ void IMaterial::Impl::WriteAttributes() {
   }
 
   for (const auto &[key, texture] : _textures) {
-    uint32_t set = key >> 16;
-    uint32_t binding = key & 0xFFFF;
+    const auto &[set, binding] = core::descriptor::ExtractSetBinding(key);
     _pipeline->GetDescriptorGroup()->BindTexture(texture.get(), set, binding);
   }
 }
@@ -65,7 +81,7 @@ void IMaterial::Impl::WriteAttributes() {
 bool IMaterial::Impl::SetTexture(unsigned int set, unsigned int binding,
                                  SharedTexture texture) {
   // Check if already exists
-  uint32_t key = (set << 16) | binding;
+  const uint64_t key = core::descriptor::CombineSetBinding(set, binding);
   if (_textures.find(key) != _textures.end()) {
     _textures[key] = texture;
     return true;
