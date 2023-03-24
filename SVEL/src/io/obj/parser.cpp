@@ -1,7 +1,20 @@
+/**
+ * @file parser.cpp
+ * @author René Pascal Becker (rene.becker2@gmx.de)
+ * @brief Obj-Parser implementation.
+ * @date 2023-03-24
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
+// Local
 #include "parser.h"
-#include "io/obj/model.hpp"
+#include "model.hpp"
+
+// STL
 #include <fstream>
-#include <iostream>
+#include <sstream>
 #include <stdexcept>
 
 using namespace io::obj;
@@ -12,7 +25,7 @@ std::vector<std::string> Parser::_splitBy(char delimiter,
   size_t start = 0, end = 0;
   while ((end = str.find_first_of(delimiter, start)) != std::string::npos) {
     substrings.push_back(str.substr(start, end - start));
-    start = end + 1; // +1 to ignore whitespace
+    start = end + 1; // +1 to ignore delimiter
   }
   substrings.push_back(str.substr(start));
   return substrings;
@@ -63,12 +76,19 @@ void Parser::_handleFace(const std::string &str, std::shared_ptr<Model> model) {
   if (substrings.size() != 3)
     return; // Ignore non tris for now
 
+  // Parse the indices out of the substrings
   Model::Primitive p{};
   for (const auto &indices : substrings) {
     std::array<size_t, 3> data{0, 0, 0};
     std::stringstream ss;
+
+    // Get values and validate them
     auto values = _splitBy('/', indices);
-    for (unsigned int i = 0; i < 3; i++) {
+    if (values.size() > 3)
+      continue;
+
+    // Parse values
+    for (unsigned int i = 0; i < values.size(); i++) {
       if (values.at(i).empty())
         continue;
       ss << values.at(i);
@@ -76,6 +96,7 @@ void Parser::_handleFace(const std::string &str, std::shared_ptr<Model> model) {
       ss.clear();
     }
 
+    // Add to the primitive
     p.emplace_back(data[0], data[1], data[2]);
     model->vertices.emplace(data[0], data[1], data[2]);
   }
@@ -84,7 +105,7 @@ void Parser::_handleFace(const std::string &str, std::shared_ptr<Model> model) {
   model->faces.push_back(p);
 }
 
-bool Parser::_handleMeshFinalization(std::shared_ptr<Model> model) {
+bool Parser::_handleModelFinalization(std::shared_ptr<Model> model) {
   // Set primitive type
   if (model->faces.empty())
     return false;
@@ -143,15 +164,15 @@ std::vector<std::shared_ptr<Model>> Parser::Parse() {
     switch (firstCharacter) {
     case 'o': // Need to create new object
       if (model != nullptr) {
-        if (_handleMeshFinalization(model))
+        if (_handleModelFinalization(model))
           result.push_back(model);
       }
       model = std::make_shared<Model>();
       break;
-    case 'v':
+    case 'v': // A vertex information
       _handleNode(line, model);
       break;
-    case 'f':
+    case 'f': // A face
       _handleFace(line, model);
       break;
     default:
@@ -159,7 +180,7 @@ std::vector<std::shared_ptr<Model>> Parser::Parse() {
     }
   }
 
-  if (_handleMeshFinalization(model))
+  if (_handleModelFinalization(model))
     result.push_back(model);
   return result;
 }
