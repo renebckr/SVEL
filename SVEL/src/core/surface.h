@@ -34,7 +34,7 @@ private:
   /**
    * @brief Window to use.
    */
-  core::SharedVulkanWindow _window;
+  core::SharedWindow _window;
 
   /**
    * @brief Instance to use.
@@ -48,7 +48,7 @@ public:
    * @param window    Window that the surface should use
    * @param instance  Instance that the surface should use
    */
-  Surface(core::SharedInstance instance, core::SharedVulkanWindow window);
+  Surface(core::SharedInstance instance, core::SharedWindow window);
 
   /**
    * @brief Cannot be copied.

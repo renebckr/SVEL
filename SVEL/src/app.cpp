@@ -1,14 +1,22 @@
-#include "app.h"
-#include "svel/detail/image.h"
-#include "window.h"
-#include <algorithm>
-#include <memory>
-#include <stdexcept>
+/**
+ * @file app.cpp
+ * @author René Pascal Becker (rene.becker2@gmx.de)
+ * @brief Implements the Application Impl and Interface.
+ * @date 2023-03-25
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
 
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-#include <iostream>
-#include <vulkan/vulkan_core.h>
+// Local
+#include "app.h"
+#include "window.h"
+
+// Internal
+#include <svel/detail/image.h>
+
+// STL
+#include <memory>
 
 using namespace SVEL_NAMESPACE;
 

@@ -1,12 +1,26 @@
+/**
+ * @file window.cpp
+ * @author René Pascal Becker (rene.becker2@gmx.de)
+ * @brief Implementation of the Window Impl and Interface.
+ * @date 2023-03-25
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
+// Local
 #include "window.h"
 #include "app.h"
-#include "renderer/frame.h"
+
+// Internal
 #include <core/instance.h>
 #include <core/surface.h>
+#include <renderer/frame.h>
 #include <renderer/renderer.h>
 #include <svel/detail/renderer.h>
 #include <texture/texture.h>
 
+// STL
 #include <stdexcept>
 
 using namespace SVEL_NAMESPACE;
@@ -16,7 +30,7 @@ using namespace SVEL_NAMESPACE;
 IWindow::Impl::Impl(core::SharedInstance instance, const std::string &title,
                     const Extent &size)
     : _instance(instance) {
-  _window = std::make_shared<core::VulkanWindow>(title, size);
+  _window = std::make_shared<core::Window>(title, size);
   _surface = std::make_shared<core::Surface>(_instance, _window);
 
   // Create Renderer
@@ -34,7 +48,7 @@ IWindow::Impl::Impl(core::SharedInstance instance, const std::string &title,
 
 SharedVulkanRenderer IWindow::Impl::GetRenderer() const { return _renderer; }
 
-core::SharedVulkanWindow IWindow::Impl::GetWindow() const { return _window; }
+core::SharedWindow IWindow::Impl::GetWindow() const { return _window; }
 
 Extent IWindow::Impl::GetWindowSize() const {
   int width, height;

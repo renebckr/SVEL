@@ -18,8 +18,7 @@
 // Vulkan
 #include <vulkan/vulkan.hpp>
 
-core::Surface::Surface(core::SharedInstance instance,
-                       core::SharedVulkanWindow window)
+core::Surface::Surface(core::SharedInstance instance, core::SharedWindow window)
     : _window(window), _instance(instance) {
   // Create surface by glfw
   VkSurfaceKHR s;
