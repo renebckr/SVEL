@@ -1,8 +1,25 @@
+/**
+ * @file shader.cpp
+ * @author René Pascal Becker (rene.becker2@gmx.de)
+ * @brief Implementation of the VulkanShader.
+ * @date 2023-03-25
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
+// Local
 #include "shader.h"
-#include "core/shader.h"
+
+// Internal
+#include <core/shader.h>
+
+// Vulkan
+#include <vulkan/vulkan_enums.hpp>
+
+// STL
 #include <memory>
 #include <stdexcept>
-#include <vulkan/vulkan_enums.hpp>
 
 using namespace SVEL_NAMESPACE;
 
@@ -24,10 +41,12 @@ VulkanShader::VulkanShader(core::SharedDevice device,
 
 Shader &VulkanShader::AddSetLayout(unsigned int id,
                                    const SetLayout &setLayout) {
+  // Validate if set already exists
   if (_setIds.find(id) != _setIds.end())
     throw std::invalid_argument("Can only add one set layout per id.");
   _setIds.insert(id);
 
+  // Convert Binding to Shader Binding information
   auto bindings = setLayout.GetBindings();
   for (const auto &[bindingId, binding] : bindings) {
     core::Shader::Binding shaderBinding;
@@ -47,6 +66,7 @@ Shader &VulkanShader::AddSetLayout(unsigned int id,
       break;
     }
 
+    // Add to the shader
     _shader->AddBinding(shaderBinding);
   }
   return *this;

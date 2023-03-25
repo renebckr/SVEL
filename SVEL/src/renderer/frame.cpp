@@ -1,5 +1,17 @@
+/**
+ * @file frame.cpp
+ * @author René Pascal Becker (rene.becker2@gmx.de)
+ * @brief Implementation of the Frame.
+ * @date 2023-03-25
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
+// Local
 #include "frame.h"
 
+// STL
 #include <iostream>
 #include <limits>
 #include <stdexcept>

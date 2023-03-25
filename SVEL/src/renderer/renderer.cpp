@@ -1,16 +1,30 @@
+/**
+ * @file renderer.cpp
+ * @author René Pascal Becker (rene.becker2@gmx.de)
+ * @brief Implementation of the VulkanRenderer.
+ * @date 2023-03-25
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
+// Local
 #include "renderer.h"
-#include "core/barrier.h"
-#include "io/obj/parser.h"
-#include "renderer/pipeline/pipeline.h"
-#include "svel/detail/mesh.h"
-#include "svel/detail/pipeline.h"
-#include "texture/animation.h"
-#include "texture/texture.h"
-#include <iostream>
+#include "shader.h"
+
+// Internal
+#include <core/barrier.h>
+#include <io/obj/parser.h>
 #include <renderer/material/material.h>
 #include <renderer/mesh/mesh.h>
 #include <renderer/pipeline/pipeline.h>
-#include <renderer/shader.h>
+#include <svel/detail/mesh.h>
+#include <svel/detail/pipeline.h>
+#include <texture/animation.h>
+#include <texture/texture.h>
+
+// STL
+#include <iostream>
 
 using namespace SVEL_NAMESPACE;
 
