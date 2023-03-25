@@ -14,7 +14,7 @@
 namespace util {
 
 /**
- * @brief Vulkan Object usable to wrap vulkan types into a usable class
+ * @brief Vulkan Adapter usable to wrap vulkan types into a usable class
  * structure.
  *
  * @tparam VulkanType Type of the wrapped vulkan object.
