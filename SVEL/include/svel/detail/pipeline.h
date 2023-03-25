@@ -1,9 +1,21 @@
+/**
+ * @file pipeline.h
+ * @author René Pascal Becker (rene.becker2@gmx.de)
+ * @brief Declaration of the pipeline.
+ * @date 2023-03-25
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
 #ifndef __SVEL_DETAIL_PIPELINE_H__
 #define __SVEL_DETAIL_PIPELINE_H__
 
+// SVEL
 #include <svel/config.h>
 #include <svel/detail/shader.h>
 
+// STL
 #include <memory>
 #include <vector>
 
@@ -21,11 +33,21 @@ enum class AttributeType {
  */
 typedef std::vector<std::pair<AttributeType, unsigned int>> VertexDescription;
 
+/**
+ * @brief Interface of a graphics pipeline.
+ */
 class Pipeline {
 public:
+  /**
+   * @brief Destroy the Pipeline.
+   *
+   */
   virtual ~Pipeline() {}
 
-  // TEMPORARY WORKAROUND
+  /**
+   * @brief Users have to notify the pipeline that a new frame is being
+   * processed (Call this at the start of the draw).
+   */
   virtual void NotifyNewFrame() = 0;
 };
 SVEL_CLASS(Pipeline)
