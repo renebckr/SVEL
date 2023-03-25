@@ -1,6 +1,21 @@
+/**
+ * @file mesh.cpp
+ * @author René Pascal Becker (rene.becker2@gmx.de)
+ * @brief Implementation of the Mesh.
+ * @date 2023-03-25
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
+// Local
 #include "mesh.h"
-#include "core/barrier.h"
-#include "renderer/mesh/buffer.h"
+
+// Internal
+#include <core/barrier.h>
+#include <renderer/mesh/buffer.h>
+
+// Vulkan
 #include <vulkan/vulkan_enums.hpp>
 
 using namespace SVEL_NAMESPACE;
@@ -10,6 +25,8 @@ Mesh::Mesh(core::SharedDevice device, const vk::CommandPool &commandPool,
            vk::IndexType iboType)
     : _vbo(std::make_shared<renderer::Buffer>()),
       _ibo(std::make_shared<renderer::Buffer>()), _iboType(iboType) {
+  // Transfer all of the data and wait for the transfer to complete.
+  // TODO: Allow barrier to be provided in the future.
   auto barrier = std::make_shared<core::Barrier>(device);
   _vbo->Transfer(device, barrier.get(), commandPool, nodes,
                  vk::BufferUsageFlagBits::eVertexBuffer);
