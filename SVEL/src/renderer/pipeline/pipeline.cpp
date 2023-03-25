@@ -8,12 +8,16 @@
  *
  */
 
+// Local
 #include "pipeline.h"
 
-#include <iostream>
-#include <stdexcept>
+// Vulkan
 #include <vulkan/vulkan_enums.hpp>
 #include <vulkan/vulkan_structs.hpp>
+
+// STL
+#include <iostream>
+#include <stdexcept>
 
 using namespace renderer;
 using namespace SVEL_NAMESPACE;

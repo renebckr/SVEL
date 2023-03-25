@@ -8,21 +8,25 @@
  *
  */
 
-#ifndef ENGINE_PIPELINE_PIPELINE_H
-#define ENGINE_PIPELINE_PIPELINE_H
+#ifndef __RENDERER_PIPELINE_PIPELINE_H__
+#define __RENDERER_PIPELINE_PIPELINE_H__
 
-#include "core/descriptor/group.h"
-#include "core/device.h"
-#include "core/memory/image.h"
-#include "core/shader.h"
-#include "core/surface.h"
-#include "core/swapchain.h"
-#include "svel/detail/pipeline.h"
-#include "util/downcast_impl.hpp"
-#include "util/vulkan_object.hpp"
+// Internal
+#include <core/descriptor/group.h>
+#include <core/device.h>
+#include <core/memory/image.h>
+#include <core/shader.h>
+#include <core/surface.h>
+#include <core/swapchain.h>
+#include <svel/detail/pipeline.h>
+#include <util/downcast_impl.hpp>
+#include <util/vulkan_object.hpp>
 
-#include <vector>
+// Vulkan
 #include <vulkan/vulkan.hpp>
+
+// STL
+#include <vector>
 
 namespace renderer {
 
@@ -89,8 +93,14 @@ private:
    */
   std::vector<vk::Framebuffer> _framebuffers;
 
+  /**
+   * @brief The set group of this pipeline used for descriptor sets.
+   */
   std::shared_ptr<core::descriptor::SetGroup> _setGroup;
 
+  /**
+   * @brief The depth buffer image for depth buffering.
+   */
   core::SharedImage _depthBuffer;
 
   /**
@@ -100,6 +110,10 @@ private:
 
   /**
    * @brief Returns the vk::Format corresponding to the Attribute Type.
+   *
+   * @param type        The attribute type.
+   * @param count       How many attributes.
+   * @return vk::Format The corresponding format.
    */
   vk::Format _getAttributeFormat(SVEL_NAMESPACE::AttributeType type,
                                  unsigned int count);
@@ -107,9 +121,9 @@ private:
   /**
    * @brief Returns the size of the Attribute.
    *
-   * @param type Type of the attribute
-   * @param count How many attributes
-   * @return size_t Size of the composite attribute
+   * @param type    Type of the attribute.
+   * @param count   How many attributes.
+   * @return size_t Size of the composite attribute.
    */
   size_t _getAttributeSize(SVEL_NAMESPACE::AttributeType type,
                            unsigned int count);
@@ -122,6 +136,15 @@ private:
   void _buildVertexInputStateInfo(
       const SVEL_NAMESPACE::VertexDescription &vertexDescription);
 
+  /**
+   * @brief Finds the first supported format of the provided format list.
+   *
+   * @param formats       Formats to query support for.
+   * @param tiling        Tiling to use.
+   * @param featureFlags  Feature flags to support.
+   * @return vk::Format   The supported format if found. Will throw if not
+   * found.
+   */
   vk::Format _findSupportedFormat(const std::vector<vk::Format> &formats,
                                   vk::ImageTiling tiling,
                                   vk::FormatFeatureFlags featureFlags);
@@ -130,20 +153,28 @@ public:
   /**
    * @brief Construct a Vulkan Pipeline.
    *
-   * @param device Device to use
-   * @param surface Surface to use
-   * @param swapchain Swapchain to use
-   * @param vert Vertex Shader to use
-   * @param frag Fragment Shader to use
-   * @param vertexDescription Description of Vertex handled by vertex shader
-   * @param descriptorLayouts Layout of all the descriptors
+   * @param device            Device to use.
+   * @param surface           Surface to use.
+   * @param swapchain         Swapchain to use.
+   * @param vert              Vertex Shader to use.
+   * @param frag              Fragment Shader to use.
+   * @param vertexDescription Description of Vertex handled by vertex shader.
    */
   VulkanPipeline(core::SharedDevice device, core::SharedSurface surface,
                  core::SharedSwapchain swapchain, core::SharedShader vert,
                  core::SharedShader frag,
                  const SVEL_NAMESPACE::VertexDescription &vertexDescription);
 
+  /**
+   * @brief Pipeline cannot be copied.
+   */
   VulkanPipeline(const Pipeline &) = delete;
+
+  /**
+   * @brief Pipeline cannot be copied.
+   *
+   * @return VulkanPipeline& ~unused~
+   */
   VulkanPipeline &operator=(const Pipeline &) = delete;
 
   /**
@@ -188,8 +219,17 @@ public:
    */
   const vk::PipelineLayout &GetLayout() const { return _pipelineLayout; }
 
+  /**
+   * @brief Getter for the descriptor set group of this pipeline.
+   *
+   * @return core::descriptor::SharedSetGroup The set group of this pipeline.
+   */
   core::descriptor::SharedSetGroup GetDescriptorGroup() { return _setGroup; }
 
+  /**
+   * @brief Notifies the pipeline that a new frame has started. TODO: Do this
+   * smarter.
+   */
   void NotifyNewFrame() final override;
 };
 SVEL_CLASS(VulkanPipeline)
@@ -197,4 +237,4 @@ SVEL_DOWNCAST_IMPL(VulkanPipeline, SVEL_NAMESPACE::Pipeline)
 
 } // namespace renderer
 
-#endif /* ENGINE_PIPELINE_PIPELINE_H */
+#endif /* __RENDERER_PIPELINE_PIPELINE_H__ */

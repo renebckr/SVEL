@@ -100,6 +100,7 @@ std::vector<Index> PriorityOrder(const std::vector<std::pair<Index, Obj>> &list,
     result.push_back(std::get<0>(pair));
   return result;
 }
+
 } // namespace util
 
 #endif /* __UTIL_PRIORITIZED_ORDER_HPP_ */
