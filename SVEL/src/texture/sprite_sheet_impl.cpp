@@ -1,6 +1,18 @@
+/**
+ * @file sprite_sheet_impl.cpp
+ * @author René Pascal Becker (rene.becker2@gmx.de)
+ * @brief Implementation of the fwd declared SpriteSheet class.
+ * @date 2023-03-25
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
+// Internal
 #include <svel/config.h>
 #include <svel/detail/image.h>
 
+// STL
 #include <cstring>
 #include <iostream>
 #include <memory>
@@ -41,6 +53,7 @@ SpriteSheet::SpriteSheet(SharedImage baseImage, const Extent &spriteCount)
     }
   }
 
+  // Create the images
   for (unsigned int i = 0; i < totalSpriteCount; i++)
     _spriteCache.push_back(std::make_shared<Image>(
         Extent{spriteSizeX, spriteSizeY}, baseImage->GetDataChannelCount(),
@@ -54,6 +67,7 @@ std::vector<SharedImage> SpriteSheet::GetSprites(
   if (!_spritesLoaded)
     return {};
 
+  // Load from the cache
   std::vector<SharedImage> sprites;
   for (auto &pos : _spritePositions) {
     if (pos.first >= _dim.width || pos.second >= _dim.height)

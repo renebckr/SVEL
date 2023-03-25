@@ -1,18 +1,34 @@
-#include "texture.h"
-#include "core/barrier.h"
-#include "core/device.h"
+/**
+ * @file texture.cpp
+ * @author René Pascal Becker (rene.becker2@gmx.de)
+ * @brief Implementation of the Texture.
+ * @date 2023-03-25
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
 
-#include <cstring>
-#include <memory>
-#include <stdexcept>
+// Local
+#include "texture.h"
+
+// Internal
+#include <core/barrier.h>
+#include <core/device.h>
+
+// Vulkan
 #include <vulkan/vulkan_core.h>
 #include <vulkan/vulkan_enums.hpp>
 #include <vulkan/vulkan_handles.hpp>
 #include <vulkan/vulkan_structs.hpp>
 
+// STL
+#include <cstring>
+#include <memory>
+#include <stdexcept>
+
 using namespace SVEL_NAMESPACE;
 
-core::SharedBuffer Texture::createStagingBuffer(SharedImage img) {
+core::SharedBuffer Texture::_createStagingBuffer(SharedImage img) {
   // Create Staging Buffer
   auto imgSize = img->GetSize();
   auto stagingBuffer = std::make_shared<core::Buffer>(
@@ -29,7 +45,7 @@ core::SharedBuffer Texture::createStagingBuffer(SharedImage img) {
   return stagingBuffer;
 }
 
-void Texture::createImage(SharedImage _img) {
+void Texture::_createImage(SharedImage _img) {
   auto vulkanDevice = _device->AsVulkanObj();
 
   // Create Vulkan Image
@@ -55,7 +71,7 @@ void Texture::createImage(SharedImage _img) {
   _imageView = vulkanDevice.createImageView(imageViewInfo);
 }
 
-void Texture::createSampler() {
+void Texture::_createSampler() {
   auto samplerInfo = vk::SamplerCreateInfo(
       vk::SamplerCreateFlags(), vk::Filter::eNearest, vk::Filter::eLinear,
       vk::SamplerMipmapMode::eLinear, vk::SamplerAddressMode::eRepeat,
@@ -65,7 +81,7 @@ void Texture::createSampler() {
   _sampler = _device->AsVulkanObj().createSampler(samplerInfo);
 }
 
-void Texture::updateImageInfo() {
+void Texture::_updateImageInfo() {
   _imageInfo = vk::DescriptorImageInfo(_sampler, _imageView,
                                        vk::ImageLayout::eShaderReadOnlyOptimal);
 }
@@ -76,11 +92,11 @@ Texture::Texture(core::SharedDevice device, SharedImage img) : _device(device) {
     throw std::runtime_error("Image has no data");
 
   // Create Buffers/Structs
-  _stagingBuffer = createStagingBuffer(img);
+  _stagingBuffer = _createStagingBuffer(img);
   _dim = img->GetExtent();
-  createImage(img);
-  createSampler();
-  updateImageInfo();
+  _createImage(img);
+  _createSampler();
+  _updateImageInfo();
 }
 
 void Texture::Dispatch(vk::CommandPool &_commandPool,
@@ -137,7 +153,7 @@ void Texture::Dispatch(vk::CommandPool &_commandPool,
   // Add Resource to Barrier
   _barrier->AddResource(
       fence,
-      std::bind(&Texture::onUpload, this->shared_from_this(), _commandPool));
+      std::bind(&Texture::_onUpload, this->shared_from_this(), _commandPool));
 }
 
 Texture::~Texture() {
