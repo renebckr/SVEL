@@ -1,0 +1,45 @@
+set(SVEL_LIB "svel")
+set(SVEL_INCLUDE_PATH include)
+cmake_path(ABSOLUTE_PATH SVEL_INCLUDE_PATH)
+
+file(GLOB_RECURSE SRC_FILES ${PROJECT_SOURCE_DIR} *.cpp *.h)
+
+include_directories(src)
+add_library(${SVEL_LIB} STATIC ${SRC_FILES})
+add_library(${PROJECT_NAME}::${SVEL_LIB} ALIAS ${SVEL_LIB})
+
+target_link_libraries(${SVEL_LIB} PRIVATE ${GLFW_LIBRARIES} ${Vulkan_LIBRARIES})
+target_compile_options(${SVEL_LIB} PRIVATE -Wall -Wextra -Wshadow -Wconversion -Wpedantic -Werror)
+
+target_include_directories(
+  ${SVEL_LIB} PUBLIC
+  $<BUILD_INTERFACE:${SVEL_INCLUDE_PATH}>
+  $<INSTALL_INTERFACE:include>
+)
+
+install(
+  TARGETS ${SVEL_LIB}
+  EXPORT svelConfig
+  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include
+)
+
+install(
+  DIRECTORY ${SVEL_INCLUDE_PATH}
+  DESTINATION ${CMAKE_INSTALL_PREFIX}
+  FILES_MATCHING PATTERN "*"
+)
+
+export(
+  TARGETS ${SVEL_LIB}
+  NAMESPACE svel::
+  FILE "${CMAKE_CURRENT_BINARY_DIR}/svelConfig.cmake"
+)
+
+install(
+  EXPORT svelConfig
+  DESTINATION "${CMAKE_INSTALL_PREFIX}"
+  NAMESPACE svel::
+)
