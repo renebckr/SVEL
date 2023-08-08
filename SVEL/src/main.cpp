@@ -41,8 +41,9 @@ int main(int argc, char *argv[]) {
       sv::SharedIApplication app = svel_make_app(argc, argv);
       app->Run();
     } catch (const std::exception &e) {
-      std::cout << e.what() << std::endl;
+      std::cout << "An exception occured:\n\t" << e.what() << std::endl;
     } catch (...) {
+      std::cout << "Unknown exception occured." << std::endl;
     }
 
     glfwTerminate();
