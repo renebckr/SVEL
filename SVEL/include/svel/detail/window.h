@@ -42,6 +42,11 @@ public:
           const Extent &windowSize);
 
   /**
+   * @brief Virtual destructor.
+   */
+  virtual ~IWindow(){};
+
+  /**
    * @brief Getter for the renderer of the window.
    *
    * @return SharedRenderer The renderer of this window.

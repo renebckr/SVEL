@@ -213,6 +213,11 @@ public:
    * @param frame The new frame to draw to.
    */
   void SelectFrame(renderer::SharedFrame frame);
+
+  /**
+   * @brief Lets the renderer recreate the swapchain.
+   */
+  void RecreateSwapchain();
 };
 SVEL_CLASS(VulkanRenderer)
 SVEL_DOWNCAST_IMPL(VulkanRenderer, SVEL_NAMESPACE::Renderer)

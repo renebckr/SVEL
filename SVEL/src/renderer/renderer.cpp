@@ -175,3 +175,8 @@ void VulkanRenderer::SelectFrame(renderer::SharedFrame frame) {
   _currentFrame = frame;
   _currentRecordBuffer = _currentFrame->GetCommandBuffer();
 }
+
+void VulkanRenderer::RecreateSwapchain() {
+  _device->AsVulkanObj().waitIdle();
+  _swapchain->Recreate();
+}

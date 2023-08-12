@@ -61,15 +61,13 @@ vk::PresentModeKHR core::Swapchain::_findPresentMode() {
   return *prioritizedList.front();
 }
 
-core::Swapchain::Swapchain(core::SharedDevice device,
-                           core::SharedSurface surface)
-    : _device(device), _surface(surface) {
+sv::Extent core::Swapchain::_createSwapchain() {
   // Get Surface Information
   _surfaceFormat = _findSurfaceFormat();
   auto surfacePresentMode = _findPresentMode();
   auto surfaceCapabilities =
       _device->GetPhysicalDevice().getSurfaceCapabilitiesKHR(
-          surface->AsVulkanObj());
+          _surface->AsVulkanObj());
 
   // Try doing triple buffering when possible
   uint32_t surfaceImageCount = 3;
@@ -87,8 +85,8 @@ core::Swapchain::Swapchain(core::SharedDevice device,
                                      surfaceImageArrayLayers);
 
   // QueueFamily Information
-  auto graphicQueueFamily = device->GetGraphicsQueueFamily();
-  auto presentQueueFamily = device->GetPresentQueueFamily();
+  auto graphicQueueFamily = _device->GetGraphicsQueueFamily();
+  auto presentQueueFamily = _device->GetPresentQueueFamily();
   bool multipleQueueFamilies = graphicQueueFamily != presentQueueFamily;
   uint32_t queueFamilyCount = multipleQueueFamilies ? 2 : 0;
   uint32_t *usedQueueFamilies = nullptr;
@@ -110,10 +108,10 @@ core::Swapchain::Swapchain(core::SharedDevice device,
       vk::SurfaceTransformFlagBitsKHR::eIdentity,
       vk::CompositeAlphaFlagBitsKHR::eOpaque, surfacePresentMode, VK_TRUE,
       VK_NULL_HANDLE);
-  _vulkanObj = device->AsVulkanObj().createSwapchainKHR(swapchainInfo);
+  _vulkanObj = _device->AsVulkanObj().createSwapchainKHR(swapchainInfo);
 
   // Create Swapchain image views
-  auto images = device->AsVulkanObj().getSwapchainImagesKHR(_vulkanObj);
+  auto images = _device->AsVulkanObj().getSwapchainImagesKHR(_vulkanObj);
   _imageViews.reserve(images.size());
   vk::ImageViewCreateInfo imageViewInfo(
       vk::ImageViewCreateFlagBits(), {}, vk::ImageViewType::e2D,
@@ -121,11 +119,14 @@ core::Swapchain::Swapchain(core::SharedDevice device,
       {vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1});
   for (auto image : images) {
     imageViewInfo.image = image;
-    _imageViews.push_back(device->AsVulkanObj().createImageView(imageViewInfo));
+    _imageViews.push_back(
+        _device->AsVulkanObj().createImageView(imageViewInfo));
   }
+
+  return {swapchainInfo.imageExtent.width, swapchainInfo.imageExtent.height};
 }
 
-core::Swapchain::~Swapchain() {
+void core::Swapchain::_destroySwapchain() {
   for (auto imageView : _imageViews)
     _device->AsVulkanObj().destroyImageView(imageView);
   _imageViews.clear();
@@ -133,9 +134,27 @@ core::Swapchain::~Swapchain() {
   _device->AsVulkanObj().destroySwapchainKHR(_vulkanObj);
 }
 
+core::Swapchain::Swapchain(core::SharedDevice device,
+                           core::SharedSurface surface)
+    : _notifier(std::make_shared<Notifier>()), _device(device),
+      _surface(surface) {
+  _createSwapchain();
+}
+
+core::Swapchain::~Swapchain() { _destroySwapchain(); }
+
 vk::ResultValue<uint32_t>
 core::Swapchain::AcquireNextImage(vk::Semaphore semaphore,
                                   vk::Fence fence) const {
   return _device->AsVulkanObj().acquireNextImageKHR(
       _vulkanObj, std::numeric_limits<uint64_t>::max(), semaphore, fence);
+}
+
+void core::Swapchain::Recreate() {
+  _destroySwapchain();
+  _notifier->Notify(Event::eRecreate, _createSwapchain());
+}
+
+core::Swapchain::Notifier &core::Swapchain::GetNotifier() const {
+  return *_notifier;
 }

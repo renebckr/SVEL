@@ -158,7 +158,7 @@ void Texture::Dispatch(vk::CommandPool &_commandPool,
 
 Texture::~Texture() {
   auto vulkanDevice = _device->AsVulkanObj();
-  vulkanDevice.destroyImage(_image);
-  vulkanDevice.destroyImageView(_imageView);
   vulkanDevice.destroySampler(_sampler);
+  vulkanDevice.destroyImageView(_imageView);
+  vulkanDevice.destroyImage(_image);
 }

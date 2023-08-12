@@ -14,6 +14,7 @@
 // Internal
 #include <core/descriptor/group.h>
 #include <core/device.h>
+#include <core/event/notifier.hpp>
 #include <core/memory/image.h>
 #include <core/shader.h>
 #include <core/surface.h>
@@ -50,6 +51,12 @@ private:
    * @brief Swapchain to use.
    */
   core::SharedSwapchain _swapchain;
+
+  /**
+   * @brief Subscription handle for the swapchain recreation notification.
+   */
+  std::unique_ptr<core::event::SubscriptionHandle>
+      _swapchainRecreationSubscription;
 
   /**
    * @brief Shaders to use.
@@ -109,6 +116,11 @@ private:
   unsigned int _vertexInputSize = 0;
 
   /**
+   * @brief Format of the depth image.
+   */
+  vk::Format _depthFormat;
+
+  /**
    * @brief Returns the vk::Format corresponding to the Attribute Type.
    *
    * @param type        The attribute type.
@@ -148,6 +160,27 @@ private:
   vk::Format _findSupportedFormat(const std::vector<vk::Format> &formats,
                                   vk::ImageTiling tiling,
                                   vk::FormatFeatureFlags featureFlags);
+
+  /**
+   * @brief Create all framebuffers for the pipeline.
+   *
+   * @param extent Extent that the framebuffers should have.
+   */
+  void _createFramebuffers(const sv::Extent &extent);
+
+  /**
+   * @brief Destroys all framebuffers of the pipeline.
+   */
+  void _destroyFramebuffers();
+
+  /**
+   * @brief Handler that is called when the underlying swapchain is recreated.
+   *
+   * @param eventType Must be the recreation event.
+   * @param extent    The new extent that the framebuffer must have (at least).
+   */
+  void _handleSwapchainRecreation(core::Swapchain::Event eventType,
+                                  const sv::Extent &extent);
 
 public:
   /**

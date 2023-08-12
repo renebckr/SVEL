@@ -56,6 +56,9 @@ Frame::Frame(core::SharedDevice device, core::SharedSwapchain swapchain)
 
   _presentInfo =
       vk::PresentInfoKHR(1, &_renderingDone, 1, nullptr, nullptr, nullptr);
+
+  // Allocate the command buffer
+  _currentBuffer = vulkanDevice.allocateCommandBuffers(_mainCmdBufferInfo)[0];
 }
 
 Frame::~Frame() {
@@ -78,9 +81,8 @@ void Frame::Instantiate() {
                              vk::to_string(result));
   vulkanDevice.resetFences(_inFlightFence);
 
-  // Reset Pool and recreate Cmd Buffer
+  // Reset Pool
   vulkanDevice.resetCommandPool(_commandPool);
-  _currentBuffer = vulkanDevice.allocateCommandBuffers(_mainCmdBufferInfo)[0];
 
   // Acquire Image
   _imageIndex = _swapchain->AcquireNextImage(_imageAvailable);
@@ -102,6 +104,16 @@ void Frame::BindPipeline(SharedVulkanPipeline pipeline) {
   _currentBuffer.beginRenderPass(renderPassBegin, vk::SubpassContents::eInline);
   _currentBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics,
                               pipeline->AsVulkanObj());
+
+  // Prototypical as of now ---
+  const auto &viewport = pipeline->GetViewport();
+  _currentBuffer.setViewport(0, viewport);
+
+  vk::Rect2D scissor({0, 0},
+                     {(uint32_t)viewport.width, (uint32_t)viewport.height});
+  _currentBuffer.setScissor(0, {scissor});
+  // ---
+
   _boundPipeline = pipeline;
 }
 
@@ -110,7 +122,7 @@ void Frame::UnbindPipeline() {
   _boundPipeline = nullptr;
 }
 
-void Frame::Submit() {
+bool Frame::Submit() {
   // End Command Buffer
   _currentBuffer.end();
 
@@ -122,8 +134,11 @@ void Frame::Submit() {
   _presentInfo.setSwapchains(_swapchain->AsVulkanObj());
   _presentInfo.setPImageIndices(&_imageIndex.value);
   auto result = _presentQueue.presentKHR(_presentInfo);
+  if (result == vk::Result::eSuboptimalKHR)
+    return false;
   if (result != vk::Result::eSuccess)
     throw std::runtime_error(vk::to_string(result));
+  return true;
 }
 
 const vk::CommandPool &Frame::GetCommandPool() { return _commandPool; }

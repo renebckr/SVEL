@@ -16,6 +16,7 @@
 #include "surface.h"
 
 // Internal
+#include <core/event/notifier.hpp>
 #include <util/vulkan_object.hpp>
 
 // Vulkan
@@ -27,7 +28,23 @@ namespace core {
  * @brief Wrapper for Vulkan Swapchain.
  */
 class Swapchain : public util::VulkanAdapter<vk::SwapchainKHR> {
+public:
+  /**
+   * @brief Possible events to subscribe to.
+   */
+  enum class Event { eRecreate };
+
+  /**
+   * @brief Type of the notifier that can be subscribed to.
+   */
+  using Notifier = event::Notifier<Event, sv::Extent>;
+
 private:
+  /**
+   * @brief Notifier that other objects can subscribe to.
+   */
+  std::shared_ptr<Notifier> _notifier;
+
   /**
    * @brief Device to use.
    */
@@ -62,6 +79,19 @@ private:
    * @return vk::PresentModeKHR The present mode
    */
   vk::PresentModeKHR _findPresentMode();
+
+  /**
+   * @brief Internal method that creates the swapchain and returns the extent
+   * that it was created with.
+   *
+   * @return sv::Extent Image size for the images of the swapchain.
+   */
+  sv::Extent _createSwapchain();
+
+  /**
+   * @brief Internal method that destroys the swapchain.
+   */
+  void _destroySwapchain();
 
 public:
   /**
@@ -122,6 +152,19 @@ public:
   vk::ResultValue<uint32_t>
   AcquireNextImage(vk::Semaphore semaphore = VK_NULL_HANDLE,
                    vk::Fence fence = VK_NULL_HANDLE) const;
+
+  /**
+   * @brief Recreate the swapchain with respect to the current surface
+   * capabilities.
+   */
+  void Recreate();
+
+  /**
+   * @brief Getter for the notifier.
+   *
+   * @return Notifier& The notifier that objects may subscribe to.
+   */
+  Notifier &GetNotifier() const;
 };
 SVEL_CLASS(Swapchain)
 

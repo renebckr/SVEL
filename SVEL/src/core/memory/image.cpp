@@ -43,8 +43,8 @@ Image::Image(core::SharedDevice device, vk::Extent2D imageSize,
 
 Image::~Image() {
   auto vulkanDevice = _device->AsVulkanObj();
-  vulkanDevice.destroyImage(_vulkanObj);
   vulkanDevice.destroyImageView(_imageView);
+  vulkanDevice.destroyImage(_vulkanObj);
 }
 
 vk::ImageView Image::GetImageView() const { return _imageView; }

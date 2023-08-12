@@ -30,10 +30,28 @@
 namespace SVEL_NAMESPACE {
 
 /**
+ * @brief Macro to declare a window callback.
+ */
+#define WINDOW_CALLBACK(name, ...)                                             \
+  static void _##name(GLFWwindow *window, __VA_ARGS__);                        \
+  void _handle_##name(__VA_ARGS__);
+
+/**
  * @brief Declaration of the Window Impl for the pImpl Idiom.
  */
 class IWindow::Impl {
 private:
+  /**
+   * @brief Table that contains all GLFWwindows and the window class that is
+   * responsible for them.
+   */
+  static inline std::unordered_map<GLFWwindow *, IWindow::Impl *> _windowTable;
+
+  /**
+   * @brief Window callback for the resize event.
+   */
+  WINDOW_CALLBACK(framebufferResizeCallback, int, int)
+
   /**
    * @brief Default Texture.
    */
@@ -69,6 +87,11 @@ public:
    */
   Impl(core::SharedInstance instance, const std::string &title,
        const Extent &size);
+
+  /**
+   * @brief Destroy the Impl.
+   */
+  ~Impl();
 
   /**
    * @brief Getter for the renderer.
