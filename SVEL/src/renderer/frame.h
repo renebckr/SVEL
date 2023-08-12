@@ -167,9 +167,12 @@ public:
   vk::PipelineLayout GetPipelineLayout();
 
   /**
-   * @brief Submit the frame to the gpu.
+   * @brief Submit the frame to the gpu. Will throw on unrecoverable error.
+   *
+   * @return true  The submit went well.
+   * @return false The submit could not occur. Swapchain recreation is required.
    */
-  void Submit();
+  bool Submit();
 
   /**
    * @brief Getter for the frame width/height.

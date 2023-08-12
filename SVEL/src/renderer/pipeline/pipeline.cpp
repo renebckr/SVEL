@@ -110,6 +110,45 @@ VulkanPipeline::_findSupportedFormat(const std::vector<vk::Format> &formats,
   throw std::runtime_error("failed to find supported format.");
 }
 
+void VulkanPipeline::_createFramebuffers(const sv::Extent &extent) {
+
+  _depthBuffer = std::make_shared<core::Image>(
+      _device, vk::Extent2D{extent.width, extent.height}, _depthFormat,
+      vk::ImageUsageFlagBits::eDepthStencilAttachment,
+      vk::ImageAspectFlagBits::eDepth);
+
+  // Create Framebuffers
+  std::array<vk::ImageView, 2> framebufferAttachments = {
+      nullptr, _depthBuffer->GetImageView()};
+
+  vk::FramebufferCreateInfo framebufferCreateInfo(
+      vk::FramebufferCreateFlagBits(), _renderPass,
+      framebufferAttachments.size(), framebufferAttachments.data(),
+      extent.width, extent.height, 1);
+
+  for (auto imageView : _swapchain->GetImageViews()) {
+    framebufferAttachments[0] = imageView;
+    _framebuffers.push_back(
+        _device->AsVulkanObj().createFramebuffer(framebufferCreateInfo));
+  }
+}
+
+void VulkanPipeline::_destroyFramebuffers() {
+  auto vulkanDevice = _device->AsVulkanObj();
+
+  for (auto framebuffer : _framebuffers)
+    vulkanDevice.destroyFramebuffer(framebuffer);
+  _framebuffers.clear();
+}
+
+void VulkanPipeline::_handleSwapchainRecreation(core::Swapchain::Event,
+                                                const sv::Extent &extent) {
+  _destroyFramebuffers();
+  _createFramebuffers(extent);
+  _viewport.setWidth((float)extent.width);
+  _viewport.setHeight((float)extent.height);
+}
+
 VulkanPipeline::VulkanPipeline(core::SharedDevice device,
                                core::SharedSurface surface,
                                core::SharedSwapchain swapchain,
@@ -206,21 +245,14 @@ VulkanPipeline::VulkanPipeline(core::SharedDevice device,
       0, vk::ImageLayout::eColorAttachmentOptimal);
 
   // Depth Attachment
-  auto depthFormat = _findSupportedFormat(
+  _depthFormat = _findSupportedFormat(
       {vk::Format::eD32Sfloat, vk::Format::eD32SfloatS8Uint,
        vk::Format::eD24UnormS8Uint},
       vk::ImageTiling::eOptimal,
       vk::FormatFeatureFlagBits::eDepthStencilAttachment);
 
-  _depthBuffer = std::make_shared<core::Image>(
-      _device,
-      vk::Extent2D{surfaceCapabilities.currentExtent.width,
-                   surfaceCapabilities.currentExtent.height},
-      depthFormat, vk::ImageUsageFlagBits::eDepthStencilAttachment,
-      vk::ImageAspectFlagBits::eDepth);
-
   vk::AttachmentDescription depthAttachment{};
-  depthAttachment.format = depthFormat;
+  depthAttachment.format = _depthFormat;
   depthAttachment.samples = vk::SampleCountFlagBits::e1;
   depthAttachment.loadOp = vk::AttachmentLoadOp::eClear;
   depthAttachment.storeOp = vk::AttachmentStoreOp::eDontCare;
@@ -275,9 +307,8 @@ VulkanPipeline::VulkanPipeline(core::SharedDevice device,
       &_vertexInputStateInfo, &pipelineInputAssemblyStateInfo, nullptr,
       &pipelineViewportStateInfo, &pipelineRasterizationStateInfo,
       &pipelineMultisampleStateInfo, &depthStencil,
-      &pipelineColorBlendStateInfo,
-      nullptr, //&pipelineDynamicStateInfo,
-      _pipelineLayout, _renderPass, 0, VK_NULL_HANDLE);
+      &pipelineColorBlendStateInfo, &pipelineDynamicStateInfo, _pipelineLayout,
+      _renderPass, 0, VK_NULL_HANDLE);
 
   std::vector<vk::GraphicsPipelineCreateInfo> graphicPipelineInfos = {
       graphicsPipelineInfo};
@@ -286,28 +317,18 @@ VulkanPipeline::VulkanPipeline(core::SharedDevice device,
       vulkanDevice.createGraphicsPipelines(VK_NULL_HANDLE, graphicPipelineInfos)
           .value.front();
 
-  // Create Framebuffers
-  std::array<vk::ImageView, 2> framebufferAttachments = {
-      nullptr, _depthBuffer->GetImageView()};
-
-  vk::FramebufferCreateInfo framebufferCreateInfo(
-      vk::FramebufferCreateFlagBits(), _renderPass,
-      framebufferAttachments.size(), framebufferAttachments.data(),
-      surfaceCapabilities.currentExtent.width,
-      surfaceCapabilities.currentExtent.height, 1);
-
-  for (auto imageView : _swapchain->GetImageViews()) {
-    framebufferAttachments[0] = imageView;
-    _framebuffers.push_back(
-        vulkanDevice.createFramebuffer(framebufferCreateInfo));
-  }
+  _createFramebuffers({surfaceCapabilities.currentExtent.width,
+                       surfaceCapabilities.currentExtent.height});
+  _swapchainRecreationSubscription = _swapchain->GetNotifier().Subscribe(
+      core::Swapchain::Event::eRecreate,
+      std::bind(&VulkanPipeline::_handleSwapchainRecreation, this,
+                std::placeholders::_1, std::placeholders::_2));
 }
 
 VulkanPipeline::~VulkanPipeline() {
   auto vulkanDevice = _device->AsVulkanObj();
 
-  for (auto framebuffer : _framebuffers)
-    vulkanDevice.destroyFramebuffer(framebuffer);
+  _destroyFramebuffers();
   vulkanDevice.destroyPipeline(_vulkanObj);
   vulkanDevice.destroyRenderPass(_renderPass);
   vulkanDevice.destroyPipelineLayout(_pipelineLayout);

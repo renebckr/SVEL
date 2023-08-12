@@ -12,6 +12,9 @@
 #include "window.h"
 #include "app.h"
 
+// GLFW
+#include <GLFW/glfw3.h>
+
 // Internal
 #include <core/instance.h>
 #include <core/surface.h>
@@ -19,11 +22,35 @@
 #include <renderer/renderer.h>
 #include <svel/detail/renderer.h>
 #include <texture/texture.h>
+#include <util/macros.hpp>
 
 // STL
+#include <iostream>
 #include <stdexcept>
 
 using namespace SVEL_NAMESPACE;
+
+/**
+ * @brief Macro for the implementation of static window callback methods.
+ *
+ */
+#define IMPL_WINDOW_CALLBACK(name, ...)                                        \
+  void IWindow::Impl::_##name(GLFWwindow *window, SIG_GET(__VA_ARGS__)) {      \
+    if (const auto &it = _windowTable.find(window); it != _windowTable.end())  \
+      it->second->_handle_##name(SIG_VALS(__VA_ARGS__));                       \
+    else                                                                       \
+      std::cout << "No internal handler for window event " #name               \
+                   " could be found."                                          \
+                << std::endl;                                                  \
+  }                                                                            \
+  void IWindow::Impl::_handle_##name(SIG_GET(__VA_ARGS__))
+
+/**
+ * @brief Define the window callback for window resizing. (Not in use)
+ */
+IMPL_WINDOW_CALLBACK(framebufferResizeCallback, int, x, int, y) {
+  x = x + y; // get rid of warning
+}
 
 // --- IMPL ---
 
@@ -44,6 +71,18 @@ IWindow::Impl::Impl(core::SharedInstance instance, const std::string &title,
   auto defaultImage = std::make_shared<Image>(Extent{1, 1}, 4, 4, imgData, 4);
   _defaultTexture = _renderer->CreateTexture(defaultImage);
   core::descriptor::Set::SetDefaultTexture(_defaultTexture);
+
+  // Add this window to the table
+  _windowTable[_window->Get()] = this;
+
+  // Register callbacks
+  glfwSetWindowSizeCallback(_window->Get(), &Impl::_framebufferResizeCallback);
+}
+
+IWindow::Impl::~Impl() {
+  if (const auto &it = _windowTable.find(_window->Get());
+      it != _windowTable.end())
+    _windowTable.erase(it);
 }
 
 SharedVulkanRenderer IWindow::Impl::GetRenderer() const { return _renderer; }
@@ -83,13 +122,20 @@ void IWindow::StartRenderLoop() {
   // Start Render Loop
   while (!glfwWindowShouldClose(window->Get())) {
     glfwPollEvents();
-    // Draw
-    auto frame = frames.at(currentFrame);
-    frame->Instantiate();
-    renderer->SelectFrame(frame);
-    Draw();
-    frame->Submit();
-    // ---
+
+    try {
+      // Draw
+      auto frame = frames.at(currentFrame);
+      frame->Instantiate();
+      renderer->SelectFrame(frame);
+      Draw();
+      if (!frame->Submit())
+        renderer->RecreateSwapchain();
+      // ---
+    } catch (const vk::OutOfDateKHRError &e) {
+      std::cout << e.what() << std::endl;
+      renderer->RecreateSwapchain();
+    }
     currentFrame = (currentFrame + 1) % maxInFlightFrameCount;
   }
 

@@ -8,8 +8,8 @@
  *
  */
 
-#ifndef __UTIL_PRIORITIZED_ORDER_HPP_
-#define __UTIL_PRIORITIZED_ORDER_HPP_
+#ifndef __UTIL_PRIORITIZED_ORDER_HPP__
+#define __UTIL_PRIORITIZED_ORDER_HPP__
 
 // STL
 #include <algorithm>
@@ -103,4 +103,4 @@ std::vector<Index> PriorityOrder(const std::vector<std::pair<Index, Obj>> &list,
 
 } // namespace util
 
-#endif /* __UTIL_PRIORITIZED_ORDER_HPP_ */
+#endif /* __UTIL_PRIORITIZED_ORDER_HPP__ */
