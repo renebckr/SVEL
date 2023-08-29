@@ -97,6 +97,17 @@ public:
                   bool looping) = 0;
 
   /**
+   * @brief Create a texture atlas from an image with given tile count in each
+   * dimension. An atlas is currently only useful to fetch texture coordinates.
+   *
+   * @param image               Image to use for the atlas.
+   * @param tileCount           How many tiles are in each dimension.
+   * @return SharedTextureAtlas The created atlas.
+   */
+  virtual SharedTextureAtlas CreateTextureAtlas(SharedImage image,
+                                                const Extent tileCount) = 0;
+
+  /**
    * @brief Create a Mesh with small indice count.
    *
    * @param nodes       The vertex data. Must be valid with the pipeline vertex

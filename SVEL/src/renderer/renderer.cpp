@@ -21,6 +21,7 @@
 #include <svel/detail/mesh.h>
 #include <svel/detail/pipeline.h>
 #include <texture/animation.h>
+#include <texture/atlas.h>
 #include <texture/texture.h>
 
 // STL
@@ -88,6 +89,13 @@ VulkanRenderer::CreateAnimation(const std::vector<SharedImage> &images,
       _device, _persistentCommandPool, std::make_shared<core::Barrier>(_device),
       images, animationSpeed, looping);
   return animation;
+}
+
+SharedTextureAtlas VulkanRenderer::CreateTextureAtlas(SharedImage image,
+                                                      const Extent tileCount) {
+  return std::make_shared<texture::VulkanTextureAtlas>(
+      _device, _persistentCommandPool, std::make_shared<core::Barrier>(_device),
+      image, tileCount.width, tileCount.height);
 }
 
 SharedMesh VulkanRenderer::CreateMesh(const ArrayProxy &nodes,
