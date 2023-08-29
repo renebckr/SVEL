@@ -69,3 +69,7 @@ void VulkanAnimation::Update(float frametime) {
   // Set new image info
   _imageInfo = _textures.at(_microSecondsPassed / _speed)->GetImageInfo();
 }
+
+SVEL_NAMESPACE::SharedTexture VulkanAnimation::GetTexture() const {
+  return _textures.at(_microSecondsPassed / _speed);
+}

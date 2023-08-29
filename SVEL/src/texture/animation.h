@@ -101,6 +101,13 @@ public:
    * @brief Implementation of the Update Interface.
    */
   void Update(float frametime) override;
+
+  /**
+   * @brief Implementation of the GetTexture Interface.
+   *
+   * @return SVEL_NAMESPACE::SharedTexture The current texture.
+   */
+  SVEL_NAMESPACE::SharedTexture GetTexture() const override;
 };
 } // namespace texture
 

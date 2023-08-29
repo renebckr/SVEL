@@ -36,7 +36,8 @@ Image::Image(const std::string &_path) {
   // Validate return value
   if (_data == nullptr)
     throw std::runtime_error(
-        "Image could not be loaded. Perhaps invalid path?");
+        std::string("Image could not be loaded. Underlying error: ") +
+        stbi_failure_reason());
 
   if (width < 0 || height < 0 || _channels < 0)
     throw std::logic_error("An Image cannot have negative extent.");

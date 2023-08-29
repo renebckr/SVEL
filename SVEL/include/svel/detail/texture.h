@@ -64,8 +64,48 @@ public:
    * @param _frametime Time in seconds since the last update.
    */
   virtual void Update(float _frametime) = 0;
+
+  /**
+   * @brief Retrieve the current texture of the animation.
+   *
+   * @return SharedTexture The current texture.
+   */
+  virtual SharedTexture GetTexture() const = 0;
 };
 SVEL_CLASS(Animation)
+
+/**
+ * @brief Declaration of the TextureAtlas interface.
+ */
+class TextureAtlas {
+public:
+  /**
+   * @brief Destroy the Texture Atlas.
+   *
+   */
+  virtual ~TextureAtlas(){};
+
+  /**
+   * @brief Getter for Tex Coords
+   *
+   * @param tileId  Id of the tile for which to get the coordinates. (y * width
+   * + x)
+   * @param offsetX Tile offset x dimension.
+   * @param offsetY Tile offset y dimension.
+   * @param extentX Width of the tile.
+   * @param extentY Height of the tile.
+   */
+  virtual void GetTexCoords(unsigned int tileId, float &offsetX, float &offsetY,
+                            float &extentX, float &extentY) = 0;
+
+  /**
+   * @brief Getter for the complete texture.
+   *
+   * @return SharedTexture The atlas texture.
+   */
+  virtual SharedTexture GetTexture() const = 0;
+};
+SVEL_CLASS(TextureAtlas)
 
 } // namespace SVEL_NAMESPACE
 

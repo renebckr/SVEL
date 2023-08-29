@@ -154,6 +154,17 @@ public:
                   float animationSpeed, bool looping) override;
 
   /**
+   * @brief Implementation of the CreateTextureAtlas Interface.
+   *
+   * @param image                               Image of the atlas.
+   * @param tileCount                           Tile count in each dimension.
+   * @return SVEL_NAMESPACE::SharedTextureAtlas Created Atlas.
+   */
+  SVEL_NAMESPACE::SharedTextureAtlas
+  CreateTextureAtlas(SVEL_NAMESPACE::SharedImage image,
+                     const SVEL_NAMESPACE::Extent tileCount) override;
+
+  /**
    * @brief Implementation of the CreateMesh Interface.
    *
    * @param nodes                       Point data.
