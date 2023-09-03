@@ -14,6 +14,7 @@
 // SVEL
 #include <svel/config.h>
 #include <svel/detail/app.h>
+#include <svel/detail/keys.h>
 #include <svel/detail/renderer.h>
 #include <svel/util/structs.hpp>
 
@@ -65,6 +66,8 @@ public:
    * the window.
    */
   void StartRenderLoop();
+
+  void SetKeyMapping(KeyMapping &mapping);
 
   /**
    * @brief Draw method to be implemented by the user.

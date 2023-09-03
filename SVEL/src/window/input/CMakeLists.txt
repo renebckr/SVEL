@@ -1,0 +1,1 @@
+add_library(input_lib ${INPUT_HEADERS} ${INPUT_SOURCES})

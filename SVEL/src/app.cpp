@@ -10,7 +10,6 @@
 
 // Local
 #include "app.h"
-#include "window.h"
 
 // Internal
 #include <svel/detail/image.h>

@@ -23,6 +23,7 @@
 #include <svel/detail/renderer.h>
 #include <texture/texture.h>
 #include <util/macros.hpp>
+#include <window/input/keyMapping.h>
 
 // STL
 #include <iostream>
@@ -133,7 +134,6 @@ void IWindow::StartRenderLoop() {
         renderer->RecreateSwapchain();
       // ---
     } catch (const vk::OutOfDateKHRError &e) {
-      std::cout << e.what() << std::endl;
       renderer->RecreateSwapchain();
     }
     currentFrame = (currentFrame + 1) % maxInFlightFrameCount;
@@ -141,4 +141,8 @@ void IWindow::StartRenderLoop() {
 
   // Finish up before frame destruction
   renderer->GetDevice()->AsVulkanObj().waitIdle();
+}
+
+void IWindow::SetKeyMapping(KeyMapping &mapping) {
+  mapping.__getImpl()->Apply(__pImpl->GetWindow()->Get());
 }

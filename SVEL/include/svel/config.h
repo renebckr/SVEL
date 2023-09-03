@@ -31,4 +31,9 @@ private:                                                                       \
 public:                                                                        \
   SharedImpl __getImpl() { return __pImpl; }
 
+#define SVEL_FLAGS(eType)                                                      \
+  inline eType operator|(const eType &a, const eType &b) {                     \
+    return static_cast<eType>(static_cast<int>(a) | static_cast<int>(b));      \
+  }
+
 #endif /* __SVEL_CONFIG_H__ */

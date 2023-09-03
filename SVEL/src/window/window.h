@@ -8,8 +8,8 @@
  *
  */
 
-#ifndef __WINDOW_H__
-#define __WINDOW_H__
+#ifndef __WINDOW_WINDOW_H__
+#define __WINDOW_WINDOW_H__
 
 // Internal
 #include <core/instance.h>
@@ -117,4 +117,4 @@ public:
 
 } // namespace SVEL_NAMESPACE
 
-#endif /* __WINDOW_H__ */
+#endif /* __WINDOW_WINDOW_H__ */
